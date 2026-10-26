@@ -1,28 +1,44 @@
 # Playwright Automation Project
 
+![Playwright Tests] (https://github.com/anakarlaorret-lang/playwright/actions/workflows/ci.yml/badge.svg)
+
+![Lint] (https://github.com/anakarlaorret-lang/playwright/actions/workflows/lint.yml/badge.svg)
+
+![Node.js] (https://img.shields.io/badge/node-18.x-green)
+
+![License] (https://img.shields.io/github/license/anakarlaorret-lang/playwright)
+
+![Dependabot] (https://img.shields.io/badge/dependabot-enabled-blue)
+
 ## Overview
 This repository demonstrates end-to-end testing with **Playwright + TypeScript**, showcasing best practices in automation, CI/CD integration, and scalable architecture. It is part of my QA Automation Portfolio.
 
 ## Features
-- Page Object Model (POM) for maintainable test design
+- Playwright + TypeScript for reliable, typed automation.
+- Page Object Model (POM) for maintainable test design and clean test organization.
+- Authentication state via .auth/messageUser.json
+- retries, screenshots, and video recording for robust test runs.
+- CI/CD with GitHub Actions including HTML reports.
+- Linting & Prettier for consistent code style.
+- Dependabot for automated dependency updates.
 - Multi-browser testing (Chromium, Firefox, WebKit)
 - UI, API, and visual regression tests
-- Reporting with HTML and Allure
-- CI/CD pipeline using GitHub Actions
-- Dockerized execution for portability
 
 ## Project Structure
-/tests
-/pages
-/fixtures
-/utils
-
-Code
+playwright/
+ ├── tests/          # Test cases
+ ├── pages/          # Page Objects
+ ├── utils/          # Helpers and utilities
+ ├── config/         # Configuration files
+ ├── .auth/          # Authentication state
+ ├── .github/        # Workflows and templates
+ ├── README.md       # Documentation
+ └── playwright.config.ts
 
 ## Setup & Installation
 1. Install [Node.js](https://nodejs.org/)
 2. Clone the repository:
-   ```bash
+   
    git clone https://github.com/your-username/playwright-automation.git
    cd playwright-automation
    
@@ -33,7 +49,6 @@ Install Playwright browsers:
 npx playwright install
 
 ##Running Tests
-Run all tests:
 npx playwright test
 
 Run tests in a specific browser:
@@ -43,11 +58,11 @@ Generate reports:
 npx playwright show-report
 
 ##CI/CD Integration
-Automated workflows with GitHub Actions
+Tests run automatically on push and pull requests.
 
-Matrix builds across browsers
+Reports are uploaded as artifacts in GitHub Actions.
 
-Badges for build status and coverage
+Status badges show test and lint results directly in the README.
 
 ##Demo & Screenshots
 Include screenshots or GIFs of test runs and reports here.
@@ -66,5 +81,12 @@ Add cloud execution support
 
 Enhance reporting with dashboards
 
+##Contributing
+Follow the guidelines in CONTRIBUTING.md.
+
+Ensure code passes lint checks before committing.
+
+Write clear commit messages and PR descriptions.
+
 ##License
-MIT License
+This project is licensed under the terms of the LICENSE file included in the repository.

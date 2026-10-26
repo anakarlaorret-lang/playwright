@@ -1,0 +1,34 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "description": "This repository demonstrates end-to-end testing with **Playwright + TypeScript**, showcasing best practices in automation, CI/CD integration, and scalable architecture. It is part of my QA Automation Portfolio.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "playwright": "^1.51.1",
+    "playwright-core": "^1.51.1",
+    "undici-types": "^6.20.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anakarlaorret-lang/playwright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anakarlaorret-lang/playwright/issues"
+  },
+  "homepage": "https://github.com/anakarlaorret-lang/playwright#readme"
+}
