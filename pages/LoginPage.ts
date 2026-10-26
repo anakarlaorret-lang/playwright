@@ -4,39 +4,17 @@ export class LoginPage {
   constructor(private page: Page, private context: BrowserContext) {}
 
   async goto() {
-    await this.page.goto('https://condo-agora.vercel.app/login');
+    await this.page.goto('https://www.saucedemo.com/ ');
   }
 
-  async loginWithGoogle(email: string, password: string) {
-    // Click on the Google login button
-    await this.page.click('text=Ingresar con Google');
-
-    // Wait for the Google OAuth popup
-    const popup = await this.context.waitForEvent('page');
-
-    // Interact with the Google login form
-    await popup.fill('input[type="email"]', email);
-    await popup.click('button:has-text("Next")');
-
-    // Wait for password field
-    await popup.fill('input[type="password"]', password);
-    await popup.click('button:has-text("Next")');
-
-    // Close popup after login
-    await popup.waitForLoadState('networkidle');
-    await popup.close();
-  }
-
-  async loginWithWhatsApp() {
-    // Placeholder: feature not yet implemented
-    await this.page.click('text=Ingresar con WhatsApp');
-  }
-
-  async isLoggedIn() {
-    return this.page.locator('text=Dashboard').isVisible();
+  async login(username: string, password: string) {
+    // Fill in the username and password fields
+    await this.page.fill('#user-name', username);
+    await this.page.fill('#password', password);
+    await this.page.click('#login-button');
   }
 
   async getErrorMessage() {
-    return this.page.locator('text=Invalid credentials');
+    return this.page.locator('[data-test="error"]');
   }
 }

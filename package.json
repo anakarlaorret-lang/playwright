@@ -1,7 +1,6 @@
 {
   "name": "playwright",
   "version": "1.0.0",
-<<<<<<< HEAD
   "description": "This repository demonstrates end-to-end testing with **Playwright + TypeScript**, showcasing best practices in automation, CI/CD integration, and scalable architecture. It is part of my QA Automation Portfolio.",
   "main": "index.js",
   "directories": {
@@ -15,32 +14,32 @@
     "undici-types": "^6.20.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.0"
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
+    "typescript": "^5.9.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc",
+    "test": "npx playwright test",
+    "report": "playwright show-report"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anakarlaorret-lang/playwright.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "playwright",
+    "typescript",
+    "automation",
+    "testing",
+    "e2e",
+    "qa"
+  ],
+  "author": "Ana K. Orret",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/anakarlaorret-lang/playwright/issues"
   },
   "homepage": "https://github.com/anakarlaorret-lang/playwright#readme"
-=======
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
->>>>>>> 70023f6cf79a46e9ebd3e35297f7b3689d879dd9
 }
