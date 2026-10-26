@@ -1,0 +1,32 @@
+{
+  "cookies": [{
+    "name": "_ga",
+    "value": "GA1.1.1550252654.1745005255",
+    "domain": ".practicesoftwaretesting.com",
+    "path": "/",
+    "expires": 1745005255,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "_ga_0BJFXRKTYC",
+    "value": "GA1.1.1550252654.1745005255",
+    "domain": ".practicesoftwaretesting.com",
+    "path": "/",
+    "expires": 1745005255,
+    "httpOnly": false,
+    "secure": false,
+    "sameSite": "Lax"
+  }],
+  "origins":[
+    {
+    "origin": "https://practicesoftwaretesting.com",
+    "localStorage": [
+      {
+      "value": "your-auth-token-here"
+      }
+    ]
+ }
+]
+}
