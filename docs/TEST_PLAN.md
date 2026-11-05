@@ -1,84 +1,42 @@
-Test Strategy – Movelo Project
+# Test Plan — SauceDemo
 
-1. Objective
-Define the overall approach, scope, and guidelines for automated testing of two web applications using Playwright and TypeScript:
+This plan turns the scope in [TEST_STRATEGY.md](./TEST_STRATEGY.md) into prioritized, observable scenarios. It describes intended coverage; it is not a claim that every scenario is already automated.
 
-* SauceDemo: a demo e‑commerce application provided by Sauce Labs, designed for automation practice. It offers stable, predictable flows (login, product catalog, cart, checkout) that allow demonstration of end‑to‑end UI, API, and validation testing in a controlled environment.
+## Priorities
 
-* Movelo: a real production website, used to showcase the ability to design and maintain tests against live, evolving features. It highlights adaptability, robustness of selectors, and regression testing in a dynamic context.
+- **P0 — Critical:** primary purchase journey and basic application availability.
+- **P1 — High:** important validation and cart/catalog behavior.
+- **P2 — Supporting:** additional regression coverage with lower user impact.
 
-The goal is to ensure critical user journeys are validated across both apps, demonstrate breadth of testing (UI, API, performance checks, basic security validations), and integrate the suites into CI/CD pipelines. 
+## Initial scenarios
 
-2. Scope
+| ID | Priority | Area | Scenario | Expected result |
+|---|---|---|---|---|
+| SD-001 | P0 | Smoke | Open SauceDemo login page | Login form is available and the page renders without a blocking error. |
+| SD-002 | P0 | Authentication | Sign in with an intended valid practice account | User reaches the inventory page and sees the product catalog. |
+| SD-003 | P1 | Authentication | Submit invalid credentials | Login is rejected with a visible, relevant error; the user is not authenticated. |
+| SD-004 | P1 | Authentication | Submit the login form with required values missing | The application prevents successful login and communicates the validation outcome. |
+| SD-005 | P1 | Catalog | Sort products by an available sort option | Product order matches the selected option. |
+| SD-006 | P0 | Cart | Add a product and open the cart | The selected product appears in the cart with the expected identifying details. |
+| SD-007 | P1 | Cart | Remove a product from the cart | The product is removed and the cart state updates accordingly. |
+| SD-008 | P0 | Checkout | Complete checkout with valid required information | The order reaches the expected completion state and reflects the selected product. |
+| SD-009 | P1 | Checkout | Attempt to continue checkout with required information missing | Checkout does not continue and a clear validation message is shown. |
+| SD-010 | P1 | Responsive UI | Open login, inventory, cart, and checkout at representative Android, iOS, and desktop viewport sizes | Key content and controls remain visible, usable, and free of unintended horizontal overflow at the selected viewport sizes. |
+| SD-011 | P1 | Responsive flow | Complete the critical shopping flow using a representative mobile device profile | Login, product selection, cart, and checkout remain operable and lead to the expected completion state. |
 
-* In Scope:
-    - Smoke tests: homepage load, visibility of key elements.
-    - Functional tests: login, navigation, contact for submission.
-    - Validation tests: required fields, email format, error messages.
-    - Regression tests: repeat critical flows on each release.
-    - Cross-browser testing: Chromium, Firefox, WebKit.
-    - CI/CD integration: GitHub Actions.
-    - UI Performance checks: (navigation timing, response times, screenshot comparissons).
-    - Basic Security validations in UI: (password field masked, form rejects malicious input)
-    - API Testing: Validate backend + frontend consistency. 
-        > Call /login API -> verify response
-        > Run UI login -> confirm same behavior
+## Execution guidance
 
-* Out of Scope:
-    - Full Performance testing: Playwright is not a full performance testing tool, so it can't simulate other than basic metrics.
-    - Full Security testing: Playwright is not a penetration testing tool. True security testing requires specialized tools (OWASP ZAP, etc...)
+1. Implement and stabilize SD-001 and SD-002 first.
+2. Add SD-006 and SD-008 as the core end-to-end purchase journey.
+3. Add P1 validation, sorting, and cart-removal cases.
+4. Run the critical suite in Chromium locally and in CI.
+5. Add responsive smoke checks for a representative Android profile, iOS profile, and desktop viewport.
+6. Run SD-011 on one mobile profile after the desktop purchase flow is reliable.
+7. Add Firefox and WebKit checks for critical scenarios after the primary suite is reliable.
+8. Add Windows/macOS CI runner coverage when cross-OS compatibility is an explicit goal and CI time permits.
 
-3. Approach
-* Framework: Playwright  + TypeScript.
-* Design Pattern: Page Object Model (POM) for modularity.
-* Data Management: JSON fixtures for credentials and form inputs.
-* Reporting: Playwright's native HTML reporter.
-* Evidence: Screenchots and videos captured on failures.
-* Automation: GitHub Actions pipeline with browser matrix.
+Tests should create the state they need, avoid order dependencies, and assert outcomes visible to a user. Device profiles validate responsive browser behavior through emulation; they do not replace physical-device testing. OS coverage requires execution on the relevant OS, not merely a different viewport. Do not use the public demo for load, stress, security, or destructive testing.
 
-4. Type of Testing
-* Smoke Testing: Verify site loads and essential elements are visible.
-* Functional Testing: Validate login, navigation, and form submission.
-* Validation Testing: Ensure proper error handling and input validation.
-Regression Testing: Re-run critical flows after updates.
-* Cross-Browser Testing: Confirm compatibility across supported browsers.
+## Traceability and results
 
-5. Tools
-* Playwright (automation framework).
-* TypeScript (typed languag for maintainability).
-* GitHub Actions (CI/CD).
-* VS Code (IDE).
-* npm/yarn (dependenciy management).
-
-6. Test Environment
-* Local: Windows 10, Node.js LTS
-* CI/CD: GitHub Actions with browser matrix.
-* Data: Dummy credentials and simulated form inputs.
-
-7. Entry and Exit Criteria
-* Entry: Site accessible, environment configured, PAge Objects created.
-* Exit: All critical cases executed, HTML report generated, evidence captured.
-
-8. Risk and Mitigation
-* UI changes: Use robust selectors (data-testid).
-* Unavailable credentials: Use dummy accounts.
-* Incomplete features: Mark tests as SKIP
-* Execution time in CI/CD: Run tests in parallel.
-
-9. Roles and Resposibilities
-* QA Engineer: Design strategy, implement Page Objects, write tests.
-* Development Team: Provide support for test data end endpoints.
-* CI/CD Owner: Configure pipelines and environments.
-
-10. Metrics
-* Percentage of critical flows automated.
-* Average execution time of the suite.
-* Number of defects caught during regression.
-* Browser coverage achieved.
-
-11. Deliverables
-* TEST_STRATEGY.md: strategy document.
-* TEST_PLAN.md: prioritized test cases.
-* pages/: Page Objects.
-* tests/: automated suites.
-* HTML reports and evidence (screenshots/videos).
+Use the scenario IDs in test titles or annotations where practical. Record defects and environment failures separately, with the scenario ID, browser, reproduction details, and relevant Playwright evidence. Review test results against the priorities above rather than relying only on an aggregate pass rate.

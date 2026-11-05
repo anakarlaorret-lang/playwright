@@ -81,6 +81,13 @@ Add cloud execution support
 
 Enhance reporting with dashboards
 
+## Portfolio release checklist
+
+- [ ] Before publishing, evaluate whether to demonstrate test-management traceability with Jira + Xray or Jira + TestRail.
+- [ ] If selected, integrate a small representative set of test cases, execution results, and linked defects; document setup, limitations, and any access or licensing requirements.
+- [ ] Choose only one test-case management approach; do not add Xray and TestRail in parallel without a specific reason.
+- [ ] If no suitable account or license is available, document the decision and retain GitHub Issues/Projects as the lightweight tracking approach.
+
 ##Contributing
 Follow the guidelines in CONTRIBUTING.md.
 
