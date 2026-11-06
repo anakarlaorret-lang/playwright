@@ -1,143 +1,136 @@
-# Test Strategy — SauceDemo Playwright Portfolio
+# Test Strategy — Practice Software Testing Portfolio
 
 ## 1. Purpose
 
-This project is a professional portfolio and learning exercise for designing and maintaining an automated testing framework with Playwright and TypeScript. SauceDemo (Swag Labs) is the sole application under test for the initial project scope.
+This project is a professional portfolio and learning exercise for designing and maintaining a Playwright and TypeScript automation framework. The system under test is Practice Software Testing (Toolshop), a public training application with a browser UI and a documented REST API.
 
-The framework should demonstrate sound QA judgment, readable and reliable automation, useful failure diagnostics, and repeatable execution locally and in CI. The quality of the strategy and evidence matters more than the number of tools or test cases.
+The portfolio aims to demonstrate practical QA judgment across UI and API layers, role-aware authentication, responsive browser testing, diagnostics, and maintainable automation. The public service is an external dependency, so tests must remain small, predictable, and respectful of shared state.
 
-## 2. Application and assumptions
+## 2. System under test and assumptions
 
-- Application: [SauceDemo](https://www.saucedemo.com/), a public e-commerce demo provided by Sauce Labs.
-- The application is an external dependency. Its availability, data, behavior, and UI may change without notice.
-- Tests must use only the public demo as intended, with its documented practice accounts and normal user flows.
-- The project does not assume access to SauceDemo's source code, internal API contract, infrastructure, or database.
-- Do not run load, stress, security, or destructive tests against the public demo.
+- Web application: [Practice Software Testing](https://practicesoftwaretesting.com/).
+- API: [Toolshop REST API](https://api.practicesoftwaretesting.com/).
+- API specification: [Swagger documentation](https://api.practicesoftwaretesting.com/api/documentation).
+- The live endpoints and sample accounts are supplied for software-testing practice. Their availability, data, and behavior may change.
+- Published sample accounts, including `user` and `admin` roles, may be used for intended authentication and read-only checks. They are public demo credentials, not private secrets.
+- The project does not assume ownership or control of the hosted service.
+- The upstream project documents a self-hosted Docker environment. Review its current license and terms before downloading, redistributing, hosting, or using its source or images beyond permitted training use.
 
 ## 3. Objectives
 
-- Validate the critical user journeys available in SauceDemo.
-- Demonstrate risk-based test selection and clear expected outcomes.
-- Keep tests understandable, independent, deterministic, and maintainable.
-- Exercise TypeScript and Playwright capabilities using idiomatic patterns.
-- Make failures diagnosable through reports and retained test evidence.
-- Run the suite consistently on a developer machine and in continuous integration.
+- Validate high-value Toolshop user journeys in the browser.
+- Exercise the documented REST API with response, schema-shape, and authentication checks.
+- Demonstrate successful authentication for user and admin sample roles without exposing tokens in logs or reports.
+- Keep tests isolated, readable, repeatable, and explicit about external dependencies.
+- Use generated data only when it can be safely isolated and cleaned up.
+- Produce actionable reports and evidence, and prepare the framework for CI execution.
 
 ## 4. Scope
 
 ### In scope
 
-- Smoke checks for the login page and the authenticated inventory page.
-- Authentication scenarios, including valid and invalid login outcomes.
-- Product catalog behavior, including sorting where supported.
-- Cart operations: adding, reviewing, and removing products.
-- Checkout validations and the successful checkout journey.
-- Responsive web checks for representative mobile, tablet, and desktop viewport sizes.
-- Critical regression coverage for the user journeys above.
-- Browser and operating-system coverage, introduced incrementally after the primary suite is stable.
-- CI execution, test reporting, and failure evidence.
+- Application smoke checks for the Toolshop home/catalog page.
+- UI login for documented user and admin sample accounts, including destination and role-appropriate account navigation where verified.
+- API health, product, category, authentication, and current-user/profile checks against documented endpoints.
+- Bearer-token handling in test fixtures, with tokens kept in memory and never logged or committed.
+- Representative responsive UI checks at mobile and desktop viewport sizes.
+- Chromium execution in GitHub Actions CI; additional browser compatibility coverage can be added after the baseline is stable.
+- Risk-based test planning, issue tracking, and failure diagnostics.
 
-### Out of scope
+### Out of scope for the shared hosted environment
 
-- Testing or asserting undocumented backend APIs or internal implementation details.
-- Database testing or claims of data integrity beyond what the UI makes observable.
-- Load, stress, soak, or performance testing against SauceDemo.
-- Penetration testing, vulnerability scanning, or claims of comprehensive security coverage.
-- Native Android or iOS application testing and testing on physical devices.
-- Exhaustive visual-regression coverage across every device and viewport.
-- Testing other production websites as part of this initial project.
+- Creating, editing, or deleting persistent users, products, categories, brands, carts, orders, favorites, invoices, or messages.
+- Tests that depend on data another user or test can modify.
+- Load, stress, soak, or performance tests.
+- Penetration testing, vulnerability scanning, or security claims beyond documented authentication/authorization behavior.
+- Database assertions against the hosted service.
+- Native mobile application or physical-device certification.
 
-Additional tools such as Postman, k6, SQL clients, Sauce Labs Cloud, AI-assisted QA, or test-management integrations (Jira with Xray or TestRail) may be considered later. They are not required to meet this strategy and must have a controlled, authorized target and a clear portfolio purpose before adoption. Before publishing, evaluate whether a small test-management integration would strengthen the portfolio; choose at most one test-case management approach and document the decision.
+Destructive or state-changing API workflows may be considered only against a local or explicitly authorized isolated environment with reliable setup and teardown. Do not silently skip cleanup failures.
 
-## 5. Test approach
+## 5. Risk-based test approach
 
-### Risk-based coverage
+Prioritize scenarios by customer impact and likelihood of failure:
 
-Prioritize scenarios by user impact and likelihood of failure:
+1. **P0 — Critical:** application availability, documented sample-account authentication, and protected current-user access.
+2. **P1 — Important:** product/category API response integrity, account navigation, role distinction, and responsive usability.
+3. **P2 — Supporting:** additional filters, sorting, validation, and browser coverage when stable and valuable.
 
-1. **P0 — Critical:** a user can authenticate, select a product, complete checkout, and see the expected completion state.
-2. **P1 — Important:** invalid or incomplete inputs are rejected correctly; cart changes and catalog sorting behave as expected.
-3. **P2 — Supporting:** less critical presentation or edge cases that add meaningful coverage without making the suite brittle.
+Assertions should verify documented contracts and user-visible outcomes. Avoid asserting volatile shared catalog totals or undocumented implementation details.
 
-Each automated test should have a focused purpose and a verifiable outcome. Prefer a small number of high-value checks over duplicating assertions across long end-to-end scripts.
+## 6. Automation design
 
-### Automation design
+- Use Playwright Test with TypeScript, built-in fixtures, API request contexts, and web-first assertions.
+- Keep UI and API base URLs independently configurable.
+- Use accessible UI locators and Page Objects for page-specific interactions; keep business expectations in the tests.
+- Keep each test independent. Do not rely on shared browser storage state or execution order.
+- Acquire authorization tokens through the documented login endpoint in a scoped fixture. Keep tokens in memory, attach them only to the API context that needs them, and never print them.
+- Validate API response status and relevant response fields. Parse JSON as untrusted input and fail explicitly if required fields are missing.
+- Avoid fixed sleeps. Local runs do not retry failed tests; CI retries once to mitigate transient failures while preserving the original attempt in the report. Investigate recurring instability rather than relying on retries.
+- Configure two Playwright workers for local runs and one worker in CI to limit concurrent traffic against the shared public application/API. Increase parallelism only after the target and tests have demonstrated stable behavior.
+- Use generated data only for an authorized target where cleanup is possible. The hosted target's persistent resources must not be modified by this suite.
 
-- Use Playwright Test with TypeScript and its built-in fixtures, assertions, and auto-waiting.
-- Prefer user-facing locators such as roles, labels, and visible text. Use stable test attributes when available and justified.
-- Keep tests independent. A test must establish the state it needs and must not rely on another test's execution order or shared authenticated browser state.
-- Keep test data explicit and non-sensitive. Do not commit personal credentials, live session state, or secrets.
-- Use Page Objects or shared helpers where they reduce meaningful duplication; avoid adding layers that obscure the user flow.
-- Avoid fixed sleeps and broad, success-shaped fallbacks. Failures should identify the unmet expectation.
+### Test setup and cleanup
 
-### Execution and diagnostics
+- Use `test.beforeEach` in a spec or `test.describe` when its tests share a UI starting state, such as opening the catalog or login page. Keep test-specific actions and assertions in the test itself.
+- Use fixtures for reusable resources with a lifecycle, such as API request contexts and authenticated sessions. Put setup before `await use(resource)` and guaranteed cleanup in `finally` after it.
+- Do not add empty or duplicate `afterEach` hooks when a fixture already owns and disposes the resource. Use an `afterEach` hook only for genuinely shared post-test behavior that is not resource teardown.
 
-- Run the focused suite locally during development and the agreed regression suite in CI.
-- Start with Chromium as the primary browser. Add Firefox and WebKit coverage once the core tests are stable; prioritize critical flows for cross-browser runs.
-- Add representative responsive projects using Playwright device descriptors and viewport settings: at least one Android-sized profile, one iOS-sized profile, and desktop viewport coverage. Check key pages and the critical purchase flow for usable layout and interactions, not pixel-perfect equality.
-- Treat Android/iOS device profiles as browser-context emulation. They help validate responsive web behavior but do not prove behavior on physical devices or fully reproduce each operating system.
-- To claim Windows and macOS coverage, run selected browser tests on CI runners for those operating systems (or an authorized cloud device service). A viewport or device descriptor alone does not emulate Windows or macOS.
-- Keep retries limited and visible. A retry must not be used to conceal flaky tests; investigate and track recurring instability.
-- Produce a Playwright HTML report and retain useful failure evidence, such as traces and screenshots. Capture video only when it materially helps diagnosis.
-- Keep CI artifacts free of secrets and unnecessary user data.
+## 7. Execution, environments, and diagnostics
 
-## 6. Test environments and data
+- **Local primary target:** public Toolshop web app and API, using only small read-only requests and published demo accounts.
+- **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
+- **CI:** GitHub Actions runs the TypeScript build and Chromium suite on pushes and pull requests. It publishes the Playwright HTML report and failure diagnostics as short-retention artifacts. Keep secrets out of logs and uploaded artifacts.
+- **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
+- **Browsers:** start with Chromium; add Firefox and WebKit for high-priority flows after the baseline is reliable.
+- **Responsive:** use representative Playwright viewport/device emulation. Describe it as emulation, not physical-device coverage.
+- Publish Playwright HTML reports and retain traces/screenshots on failure where useful. Do not include bearer tokens, authentication state, or unnecessary personal data in artifacts.
+- Distinguish application failures from public service outages or shared-data changes.
 
-- **Local:** developer workstation with the Node.js version and dependencies specified by the repository.
-- **CI:** GitHub Actions, using a reproducible dependency installation and Playwright browser setup.
-- **Responsive coverage:** representative Playwright device profiles and viewport sizes, with exact profiles selected to match the Playwright version in the repository.
-- **Desktop OS coverage:** Windows first; macOS CI coverage can be added as a separate matrix job when practical. Record the OS/browser combination in results.
-- **Target:** the public SauceDemo site; no private test environment or backend access is assumed.
-- **Test data:** practice accounts and products provided by the demo. Avoid tests that depend on data left behind by a previous run.
-
-Because the target is external, distinguish product regressions from environment or availability failures in reports and issue tracking.
-
-## 7. Entry and exit criteria
+## 8. Entry and exit criteria
 
 ### Entry
 
-- The target site is reachable.
+- The web application and API health endpoint are reachable.
+- The active OpenAPI specification and documented sample accounts have been checked.
 - Dependencies and required Playwright browsers are installed.
-- The test scope and expected outcomes are documented.
-- Tests use permitted demo accounts and do not require private credentials.
+- The test has a documented expected result and does not mutate shared hosted data.
 
 ### Exit
 
-- All in-scope P0 scenarios pass in the primary browser, or any failure is triaged with its cause documented.
-- The planned responsive smoke checks pass at the selected mobile and desktop viewport sizes, or any layout limitation is documented.
-- The regression run produces a readable report and failure evidence when applicable.
-- Tests are repeatable and do not depend on execution order or leftover state.
-- Known limitations, skipped coverage, and external-environment failures are reported honestly.
+- All in-scope P0 scenarios pass, or failures are triaged and their cause documented.
+- API tests validate successful responses and essential fields without depending on unstable global counts.
+- Tokens are not present in logs, screenshots, traces, committed files, or report attachments.
+- Tests are independent and repeatable; public-environment limitations are reported honestly.
 
-## 8. Risks and mitigations
+## 9. Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Public demo downtime or behavior changes | Keep the external dependency explicit; distinguish target outages from test defects and avoid claiming guaranteed availability. |
-| Brittle selectors or UI changes | Prefer accessible, user-facing locators and review failures against the actual UI before changing assertions. |
-| Shared or residual state | Make tests independent and use only the demo's intended flows and data. |
-| Flaky tests hidden by retries | Keep retries limited, monitor repeated failures, and fix root causes rather than increasing retry counts. |
-| Emulated mobile coverage is mistaken for physical-device or OS validation | Label emulation accurately and use real-device/cloud or OS-specific CI runs only when those claims are required. |
-| Browser/device matrix increases run time and maintenance | Begin with representative profiles and critical flows; expand the matrix based on risk and observed defects. |
-| Scope expanding into unsupported API, database, or performance claims | Keep these areas out of scope until an authorized, controllable environment and measurable objectives exist. |
-| Secrets or session data accidentally committed | Use only public practice credentials; review and exclude authentication state and sensitive artifacts. |
+| Public application/API downtime or contract changes | Record the target version/status; distinguish service availability from a test regression and review the published OpenAPI spec. |
+| Shared demo data changes | Prefer read-only API calls and assertions about shape/relationships rather than exact totals. |
+| Token leakage | Keep tokens scoped to fixtures and memory; never attach authorization headers or token values to test output. |
+| Accidental persistent writes | Keep public-host tests read-only except login; reserve writes for an authorized isolated environment. |
+| Role assumptions drift | Verify user/admin behavior against current published documentation and application behavior; do not infer permissions from labels alone. |
+| Mobile emulation overstated | Report viewport/device emulation separately from physical device testing. |
+| Upstream source/license constraints | Review upstream terms before self-hosting, redistributing, or packaging source/images. |
 
-## 9. Measures of success
+## 10. Measures of success
 
-- P0 scenario coverage against the documented plan.
-- Pass/fail and repeat-failure trends for critical scenarios.
-- Flaky-test rate, with retries and their outcomes visible.
-- CI execution time and successful artifact publication.
-- Browser coverage for the critical journeys.
-- Responsive coverage by selected viewport/device profile and, where configured, OS/browser combination.
-- Defects and limitations documented with reproducible evidence.
+- Coverage of documented P0 UI and API scenarios.
+- Stable outcome and response-shape checks for each API scenario.
+- Verified user/admin identity and role behavior without exposing tokens.
+- Flaky-test and repeat-failure trends.
+- CI status, run time, and useful failure artifact publication.
+- Responsive viewport and browser coverage accurately represented.
 
-These measures describe suite health and coverage; passing tests alone do not prove the absence of defects.
+Passing tests do not prove the absence of defects or validate behavior outside the documented scope.
 
-## 10. Deliverables
+## 11. Deliverables
 
 - This strategy and a prioritized test plan.
-- Playwright and TypeScript framework configuration.
-- Automated UI tests for the agreed SauceDemo journeys.
-- CI workflow with reports and diagnostic artifacts.
-- README with verified setup, run commands, scope, and limitations.
+- Playwright and TypeScript framework configuration for the web app and API.
+- UI and API tests for documented, non-destructive Toolshop scenarios.
+- Reusable Page Objects, API fixtures, and test data.
+- GitHub Actions CI workflow and Playwright diagnostic reports.
+- README with verified setup, run commands, scope, limitations, and upstream references.

@@ -1,42 +1,49 @@
-# Test Plan — SauceDemo
+# Test Plan — Practice Software Testing (Toolshop)
 
-This plan turns the scope in [TEST_STRATEGY.md](./TEST_STRATEGY.md) into prioritized, observable scenarios. It describes intended coverage; it is not a claim that every scenario is already automated.
+This plan describes planned coverage; it does not imply every scenario is implemented. See [TEST_STRATEGY.md](./TEST_STRATEGY.md) for environments, safety boundaries, and automation principles.
 
 ## Priorities
 
-- **P0 — Critical:** primary purchase journey and basic application availability.
-- **P1 — High:** important validation and cart/catalog behavior.
-- **P2 — Supporting:** additional regression coverage with lower user impact.
+- **P0 — Critical:** application availability, sample-account authentication, protected profile access.
+- **P1 — High:** API response integrity, role identity, responsive usability.
+- **P2 — Supporting:** invalid authentication, catalog search/sort, and expanded browser coverage.
 
-## Initial scenarios
+## Scenarios
 
-| ID | Priority | Area | Scenario | Expected result |
-|---|---|---|---|---|
-| SD-001 | P0 | Smoke | Open SauceDemo login page | Login form is available and the page renders without a blocking error. |
-| SD-002 | P0 | Authentication | Sign in with an intended valid practice account | User reaches the inventory page and sees the product catalog. |
-| SD-003 | P1 | Authentication | Submit invalid credentials | Login is rejected with a visible, relevant error; the user is not authenticated. |
-| SD-004 | P1 | Authentication | Submit the login form with required values missing | The application prevents successful login and communicates the validation outcome. |
-| SD-005 | P1 | Catalog | Sort products by an available sort option | Product order matches the selected option. |
-| SD-006 | P0 | Cart | Add a product and open the cart | The selected product appears in the cart with the expected identifying details. |
-| SD-007 | P1 | Cart | Remove a product from the cart | The product is removed and the cart state updates accordingly. |
-| SD-008 | P0 | Checkout | Complete checkout with valid required information | The order reaches the expected completion state and reflects the selected product. |
-| SD-009 | P1 | Checkout | Attempt to continue checkout with required information missing | Checkout does not continue and a clear validation message is shown. |
-| SD-010 | P1 | Responsive UI | Open login, inventory, cart, and checkout at representative Android, iOS, and desktop viewport sizes | Key content and controls remain visible, usable, and free of unintended horizontal overflow at the selected viewport sizes. |
-| SD-011 | P1 | Responsive flow | Complete the critical shopping flow using a representative mobile device profile | Login, product selection, cart, and checkout remain operable and lead to the expected completion state. |
+| ID | Priority | Layer | Scenario | Expected result | Status |
+|---|---|---|---|---|---|
+| PST-001 | P0 | UI | Open Toolshop home page | Page title, catalog controls, and product area render. | Implemented |
+| PST-002 | P0 | UI | Sign in with the documented customer account | Login succeeds and the account page identifies the signed-in user. | Implemented |
+| PST-003 | P0 | API | Authenticate customer with `POST /users/login`; use bearer token on `GET /users/me` | Protected profile matches the customer account and the issued token's role claim is `user`. | Implemented |
+| PST-004 | P1 | API | Authenticate admin and retrieve `GET /users/me` | Protected profile matches the admin sample account and the issued token's role claim is `admin`. | Implemented |
+| PST-005 | P1 | API | Request `/status` | Successful response contains Toolshop application and version metadata. | Implemented |
+| PST-006 | P1 | API | Request `/products?page=1` | Successful response contains product IDs, names, and numeric prices without asserting a volatile total. | Implemented |
+| PST-007 | P1 | API | Request `/categories` | Successful response contains category IDs and names. | Implemented |
+| PST-008 | P1 | UI | Search by product name, verify unmatched search, filter by category, and sort names A-Z | Product cards match the search/category criteria and the visible names are sorted. | Implemented |
+| PST-009 | P1 | UI | Open catalog and login at mobile and desktop viewports | Key controls remain visible and the catalog has no horizontal overflow. | Implemented |
+| PST-010 | P2 | API | Submit invalid credentials to `/users/login` | API returns `401` and does not issue an access token. | Implemented |
+| PST-011 | P1 | UI | Submit invalid customer credentials | Login is rejected with a visible error and the user remains on the login page. | Implemented |
+| PST-012 | P2 | UI | Submit a malformed email address | Browser email validation prevents successful form submission. | Implemented |
+| PST-013 | P1 | UI | Open a product from the catalog | Product detail route and selected product heading are displayed. | Implemented |
+| PST-014 | P1 | UI | Add a product to cart and verify item/total | Cart reflects the added product and its price. | Planned (isolated environment only) |
 
-## Execution guidance
+## Execution order
 
-1. Implement and stabilize SD-001 and SD-002 first.
-2. Add SD-006 and SD-008 as the core end-to-end purchase journey.
-3. Add P1 validation, sorting, and cart-removal cases.
-4. Run the critical suite in Chromium locally and in CI.
-5. Add responsive smoke checks for a representative Android profile, iOS profile, and desktop viewport.
-6. Run SD-011 on one mobile profile after the desktop purchase flow is reliable.
-7. Add Firefox and WebKit checks for critical scenarios after the primary suite is reliable.
-8. Add Windows/macOS CI runner coverage when cross-OS compatibility is an explicit goal and CI time permits.
+1. Keep the implemented PST-001 through PST-013 baseline stable in local runs and Chromium CI.
+2. Add Firefox/WebKit coverage for the highest-risk read-only UI flows.
+3. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
+4. Evaluate a small Gherkin pilot for high-value business scenarios; adopt it only if the feature language improves collaboration without duplicating test intent or adding unnecessary maintenance.
+5. Enable `fullyParallel` only after all tests are demonstrably independent, fixtures and data are isolated, and repeated parallel runs remain stable against the selected environment.
 
-Tests should create the state they need, avoid order dependencies, and assert outcomes visible to a user. Device profiles validate responsive browser behavior through emulation; they do not replace physical-device testing. OS coverage requires execution on the relevant OS, not merely a different viewport. Do not use the public demo for load, stress, security, or destructive testing.
+## Planned framework improvements
 
-## Traceability and results
+- **Gherkin pilot:** select one or two stakeholder-facing scenarios, map Given/When/Then steps to reusable Playwright code, and compare readability and maintenance against the current TypeScript tests before deciding whether to expand.
+- **Full parallel execution:** first make tests independent of ordering and shared mutable state; then enable `fullyParallel: true` and validate with repeated runs at multiple worker counts. Keep it disabled against the shared hosted service until its rate limits and concurrent behavior are understood.
 
-Use the scenario IDs in test titles or annotations where practical. Record defects and environment failures separately, with the scenario ID, browser, reproduction details, and relevant Playwright evidence. Review test results against the priorities above rather than relying only on an aggregate pass rate.
+## Shared-service safety
+
+Public-host tests must not create or modify persistent users, products, categories, brands, carts, orders, favorites, invoices, or messages. Keep bearer tokens in memory and never include their values in reports or logs. Reserve write workflows for a local or explicitly authorized isolated environment with reliable setup and cleanup.
+
+## Traceability
+
+Use the scenario IDs in test titles or annotations. For failures, record target (web/API), environment, browser, sanitized request/response details, and reproducible steps. Never attach credentials, tokens, cookies, or authentication state.

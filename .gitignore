@@ -2,3 +2,7 @@
 node_modules
 .tmp
 npm-debug.log
+.auth/
+playwright-report/
+test-results/
+dist/

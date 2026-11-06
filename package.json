@@ -1,7 +1,7 @@
 {
   "name": "playwright",
   "version": "1.0.0",
-  "description": "This repository demonstrates end-to-end testing with **Playwright + TypeScript**, showcasing best practices in automation, CI/CD integration, and scalable architecture. It is part of my QA Automation Portfolio.",
+  "description": "Playwright and TypeScript portfolio framework for UI and API testing of Practice Software Testing Toolshop.",
   "main": "index.js",
   "directories": {
     "lib": "lib",

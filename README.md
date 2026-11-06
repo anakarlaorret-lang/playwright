@@ -1,99 +1,82 @@
-# Playwright Automation Project
+# Practice Software Testing — Playwright Portfolio
 
-![Playwright Tests] (https://github.com/anakarlaorret-lang/playwright/actions/workflows/ci.yml/badge.svg)
+Playwright Test and TypeScript portfolio framework for the [Practice Software Testing Toolshop](https://practicesoftwaretesting.com/) web application and its documented REST API.
 
-![Lint] (https://github.com/anakarlaorret-lang/playwright/actions/workflows/lint.yml/badge.svg)
+## Project goals
 
-![Node.js] (https://img.shields.io/badge/node-18.x-green)
+- Demonstrate risk-based QA planning across UI and API.
+- Practice maintainable Playwright, TypeScript, Page Object Model, and test fixtures.
+- Validate documented sample-account authentication, including customer/admin roles and bearer-token protected profile access.
+- Validate the TypeScript build and Chromium suite locally and in GitHub Actions CI.
+- Keep external-service limitations and test boundaries explicit.
 
-![License] (https://img.shields.io/github/license/anakarlaorret-lang/playwright)
+## Current status
 
-![Dependabot] (https://img.shields.io/badge/dependabot-enabled-blue)
+Implemented coverage:
 
-## Overview
-This repository demonstrates end-to-end testing with **Playwright + TypeScript**, showcasing best practices in automation, CI/CD integration, and scalable architecture. It is part of my QA Automation Portfolio.
+- Toolshop home page smoke check.
+- Catalog search, category filtering, and name sorting.
+- Customer login through the UI, including invalid credentials and malformed-email validation.
+- Product detail navigation; mobile catalog/login and desktop catalog viewport checks.
+- Read-only API health, products, and categories checks.
+- Customer/admin API login that obtains bearer tokens in memory, checks their role claims, and validates protected `/users/me` profile responses.
 
-## Features
-- Playwright + TypeScript for reliable, typed automation.
-- Page Object Model (POM) for maintainable test design and clean test organization.
-- Authentication state via .auth/messageUser.json
-- retries, screenshots, and video recording for robust test runs.
-- CI/CD with GitHub Actions including HTML reports.
-- Linting & Prettier for consistent code style.
-- Dependabot for automated dependency updates.
-- Multi-browser testing (Chromium, Firefox, WebKit)
-- UI, API, and visual regression tests
+Planned work includes broader Firefox/WebKit coverage, cart workflows in an isolated environment, a limited Gherkin pilot, and evaluating `fullyParallel` after proving test independence. The hosted demo suite remains read-only except for authentication attempts.
 
-## Project Structure
-playwright/
- ├── tests/          # Test cases
- ├── pages/          # Page Objects
- ├── utils/          # Helpers and utilities
- ├── config/         # Configuration files
- ├── .auth/          # Authentication state
- ├── .github/        # Workflows and templates
- ├── README.md       # Documentation
- └── playwright.config.ts
+The public environment is shared. Current tests avoid creating or modifying persistent resources and do not run load, stress, security, or destructive tests.
 
-## Setup & Installation
-1. Install [Node.js](https://nodejs.org/)
-2. Clone the repository:
-   
-   git clone https://github.com/your-username/playwright-automation.git
-   cd playwright-automation
-   
-Install dependencies:
-npm install
+## Prerequisites
 
-Install Playwright browsers:
-npx playwright install
+- Node.js 20 or newer.
+- npm.
 
-##Running Tests
-npx playwright test
+## Install and run
 
-Run tests in a specific browser:
-npx playwright test --project=chromium
-
-Generate reports:
+```bash
+npm ci
+npx playwright install chromium
+npm test
 npx playwright show-report
+```
 
-##CI/CD Integration
-Tests run automatically on push and pull requests.
+Run TypeScript compilation:
 
-Reports are uploaded as artifacts in GitHub Actions.
+```bash
+npm run build
+```
 
-Status badges show test and lint results directly in the README.
+The GitHub Actions workflow runs the build and Chromium tests for pushes and pull requests. It stores the HTML report and failure diagnostics as workflow artifacts.
 
-##Demo & Screenshots
-Include screenshots or GIFs of test runs and reports here.
+Playwright uses two workers locally and one worker in CI. Full parallel execution (`fullyParallel`) is intentionally deferred until tests and data isolation are proven stable.
 
-##Highlights
-Clean code with ESLint + Prettier
+## Configuration and sample accounts
 
-Reusable fixtures and utilities
+The web and API targets are the public hosted Toolshop services. Sample customer/admin credentials are documented by the upstream project and stored in [testData.json](utils/testData.json); these are public training credentials, not private account secrets. Do not put personal credentials or generated bearer tokens in the repository.
 
-Scalable test architecture
+The targets can be overridden with `WEB_BASE_URL` and `API_BASE_URL` environment variables, for example when running against an authorized local instance.
 
-##Future Work
-Expand test coverage
+The upstream application publishes its [API specification](https://api.practicesoftwaretesting.com/api/documentation) and [source repository](https://github.com/testsmith-io/practice-software-testing). Review the upstream license and terms before downloading, redistributing, hosting, or packaging source code or images. This portfolio targets the hosted training service and does not include or redistribute the application.
 
-Add cloud execution support
+## Repository layout
 
-Enhance reporting with dashboards
+```text
+tests/                    Active UI and API tests
+tests/fixtures.ts         API clients and in-memory bearer-token fixtures
+pages/                    Shared and page-specific objects
+utils/testData.json       Public sample accounts and test inputs
+docs/TEST_STRATEGY.md     Scope, approach, risks, and boundaries
+docs/TEST_PLAN.md         Prioritized scenarios and implementation status
+.github/ISSUE_TEMPLATE/  Bug report form
+playwright.config.ts      Playwright Test configuration
+```
 
-## Portfolio release checklist
+## Scope and limitations
 
-- [ ] Before publishing, evaluate whether to demonstrate test-management traceability with Jira + Xray or Jira + TestRail.
-- [ ] If selected, integrate a small representative set of test cases, execution results, and linked defects; document setup, limitations, and any access or licensing requirements.
-- [ ] Choose only one test-case management approach; do not add Xray and TestRail in parallel without a specific reason.
-- [ ] If no suitable account or license is available, document the decision and retain GitHub Issues/Projects as the lightweight tracking approach.
+The hosted app and API are external shared dependencies. Public-host tests are limited to read-only checks and authentication. Data-changing workflows, database verification, and performance tests require an isolated local or explicitly authorized environment with reliable cleanup. Playwright device profiles validate browser emulation, not physical-device behavior.
 
-##Contributing
-Follow the guidelines in CONTRIBUTING.md.
+See [TEST_STRATEGY.md](docs/TEST_STRATEGY.md) and [TEST_PLAN.md](docs/TEST_PLAN.md) for details.
 
-Ensure code passes lint checks before committing.
+## Before publishing
 
-Write clear commit messages and PR descriptions.
-
-##License
-This project is licensed under the terms of the LICENSE file included in the repository.
+- [ ] Decide whether a small Jira + Xray or Jira + TestRail example adds value to the portfolio.
+- [ ] Use only one test-case management integration; if no suitable account/license is available, retain GitHub Issues/Projects and document the choice.

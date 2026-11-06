@@ -1,8 +1,8 @@
 # Bug report
 
-Use this template to report a reproducible problem in the Playwright framework, its CI workflow, or an observed behavior in the SauceDemo flows covered by this portfolio. For test failures, include enough detail to distinguish an application issue from a test, environment, or availability issue.
+Use this template to report a reproducible problem in the Playwright framework, its CI workflow, or an observed behavior in the Practice Software Testing (Toolshop) flows covered by this portfolio. For test failures, include enough detail to distinguish an application issue from a test, environment, or availability issue.
 
-> SauceDemo is a public third-party demo and may be unavailable or change without notice. Do not report expected limitations as confirmed product defects without reproducible evidence.
+> Toolshop is a public demo and may be unavailable or change without notice. Do not report expected limitations as confirmed product defects without reproducible evidence.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Use this template to report a reproducible problem in the Playwright framework, 
 <!-- Choose one and remove the others. -->
 - [ ] Automation framework or test defect
 - [ ] CI, configuration, or reporting problem
-- [ ] Unexpected SauceDemo behavior observed during an in-scope scenario
+- [ ] Unexpected Toolshop behavior observed during an in-scope scenario
 - [ ] Documentation issue
 
 ## Related test scenario
@@ -61,7 +61,7 @@ Additional frequency or conditions:
 - Evidence link(s):
 - Relevant error or log excerpt:
 
-Before sharing, remove credentials, cookies, authorization headers, personal data, and session/authentication state files. Do not attach files from `.auth/`.
+Before sharing, remove credentials, bearer tokens, cookies, authorization headers, personal data, and session/authentication state files. Do not attach files from `.auth/`.
 
 ## Additional context
 
@@ -73,4 +73,4 @@ Before sharing, remove credentials, cookies, authorization headers, personal dat
 - [ ] I included the scenario ID or explained why it is not applicable.
 - [ ] I provided steps that can be followed independently.
 - [ ] I removed secrets and sensitive data from the report and attachments.
-- [ ] I did not use SauceDemo for load, stress, security, or destructive testing.
+- [ ] I did not use the shared hosted Toolshop environment for load, stress, security, or destructive testing.

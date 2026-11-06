@@ -1,6 +1,18 @@
 {
-  "users": [
-    { "username": "standard_user", "password": "secret_sauce", "valid": true },
-    { "username": "locked_out_user", "password": "secret_sauce", "valid": false }
-  ]
+  "accounts": {
+    "customer": {
+      "email": "customer@practicesoftwaretesting.com",
+      "password": "welcome01",
+      "role": "user"
+    },
+    "admin": {
+      "email": "admin@practicesoftwaretesting.com",
+      "password": "welcome01",
+      "role": "admin"
+    }
+  },
+  "invalidLogin": {
+    "email": "unknown.user@example.invalid",
+    "password": "invalid-password"
+  }
 }
