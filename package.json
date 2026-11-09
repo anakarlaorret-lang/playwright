@@ -17,12 +17,16 @@
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "^1.64.0",
     "@types/node": "^26.6.5",
+    "playwright-bdd": "9.2.1",
     "typescript": "^5.9.3"
   },
   "scripts": {
     "build": "npx tsc",
-    "test": "npx playwright test",
+    "bdd:generate": "bddgen",
+    "test": "npm run bdd:generate && playwright test --project=chromium --project=gherkin",
+    "test:parallel-check": "npm run bdd:generate && playwright test --fully-parallel --project=chromium --project=gherkin --workers=2 --retries=0",
     "test:cross-browser": "playwright test --project=firefox --project=webkit tests/homepage.spec.ts tests/product.spec.ts",
+    "test:gherkin": "npm run bdd:generate && playwright test --project=gherkin",
     "report": "playwright show-report"
   },
   "repository": {

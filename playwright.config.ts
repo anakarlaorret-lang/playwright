@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import { defineBddProject } from 'playwright-bdd';
 import { environment } from './utils/environment';
 
 export default defineConfig({
@@ -35,6 +36,15 @@ export default defineConfig({
       name: 'webkit',
       testMatch: [/homepage\.spec\.ts/, /product\.spec\.ts/],
       use: { browserName: 'webkit' },
+    },
+    {
+      ...defineBddProject({
+        name: 'gherkin',
+        features: 'tests/features/**/*.feature',
+        steps: 'tests/steps/**/*.ts',
+        outputDir: '.features-gen',
+      }),
+      use: { browserName: 'chromium' },
     },
   ],
 });

@@ -27,7 +27,7 @@ The public environment is shared. Current tests avoid creating or modifying pers
 
 ## Prerequisites
 
-- Node.js 20 or newer.
+- Node.js 20.18 or newer.
 - npm.
 
 ## Install and run
@@ -50,6 +50,18 @@ Run TypeScript compilation:
 
 ```bash
 npm run build
+```
+
+The unmatched-product catalog scenario is a small executable Gherkin pilot:
+
+```bash
+npm run test:gherkin
+```
+
+To evaluate fully parallel execution without enabling it by default:
+
+```bash
+npm run test:parallel-check
 ```
 
 GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. UI tests against the public demo and selected Firefox/WebKit runs can be started manually from the Playwright CI workflow because the hosted site did not reliably render pages from GitHub-hosted runners. HTML/JSON reports and failure diagnostics are retained as workflow artifacts; the JSON report includes test durations and retry outcomes. Video recording is disabled to keep artifacts small.
@@ -75,6 +87,8 @@ pages/                    Shared and page-specific objects
 utils/testData.json       Public sample accounts and test inputs
 docs/TEST_STRATEGY.md     Scope, approach, risks, and boundaries
 docs/TEST_PLAN.md         Prioritized scenarios and implementation status
+tests/features/           Executable Gherkin behavior scenarios
+tests/steps/              Playwright-BDD step definitions
 .github/ISSUE_TEMPLATE/  Bug report form
 playwright.config.ts      Playwright Test configuration
 ```

@@ -35,13 +35,13 @@ This plan describes planned coverage; it does not imply every scenario is implem
 2. Keep API tests in push/PR CI; trigger public-host UI tests manually and record external-site availability separately.
 3. Run selected read-only catalog/product UI flows in Firefox and WebKit manually when cross-browser evidence is needed.
 4. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
-5. Evaluate a small Gherkin pilot for high-value business scenarios; adopt it only if the feature language improves collaboration without duplicating test intent or adding unnecessary maintenance.
-6. Enable `fullyParallel` only after all tests are demonstrably independent, fixtures and data are isolated, and repeated parallel runs remain stable against the selected environment.
+5. Review the Gherkin pilot for stakeholder readability and maintenance before adding more scenarios.
+6. Run `npm run test:parallel-check` repeatedly and review its JSON report for failures/retries; keep `fullyParallel` disabled by default until stable results are demonstrated against an isolated target.
 
 ## Planned framework improvements
 
-- **Gherkin pilot:** select one or two stakeholder-facing scenarios, map Given/When/Then steps to reusable Playwright code, and compare readability and maintenance against the current TypeScript tests before deciding whether to expand.
-- **Full parallel execution:** first make tests independent of ordering and shared mutable state; then enable `fullyParallel: true` and validate with repeated runs at multiple worker counts. Keep it disabled against the shared hosted service until its rate limits and concurrent behavior are understood.
+- **Gherkin pilot:** PST-008's unmatched-product search scenario is implemented in `tests/features/catalog-search.feature`; step definitions reuse the existing Home Page Object. Keep Gherkin limited to scenarios where business-readable steps add value rather than translating all low-level checks.
+- **Full parallel execution:** a two-worker, zero-retry readiness command is available as `npm run test:parallel-check`. Two-worker trials against the public service failed intermittently in product sorting and sample-account login, so `fullyParallel` remains disabled. Re-evaluate only against an isolated/stable target or after the public service demonstrates repeated stable runs.
 - **Responsive emulation:** coverage includes mobile and desktop viewports, a tablet viewport, touch interaction with mobile filters, and a compact mobile landscape viewport. These are browser emulation checks, not physical-device coverage.
 - **Accessibility:** automated axe checks cover the home and login pages for selected WCAG A/AA rules. The current public application has known findings for the language selector accessible name and a login-page button name; these are documented as baseline, attached to test results, and new findings fail the tests. Automated scans catch only some issues and do not establish WCAG conformance; manual assessment remains necessary.
 - **Efficient test execution:** CI exports Playwright JSON results with per-test durations, retry counts, and outcomes. Use this evidence to investigate flaky or slow tests rather than increasing retries by default.

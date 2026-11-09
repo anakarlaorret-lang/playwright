@@ -34,14 +34,6 @@ test('PST-008 searches for products by name', async ({ page }) => {
   );
 });
 
-test('PST-008 displays no products for an unmatched search', async ({ page }) => {
-  const homePage = new HomePage(page);
-
-  await homePage.searchFor('no-matching-product-automation-check');
-
-  await expect(homePage.productCards).toHaveCount(0);
-});
-
 test('PST-008 filters catalog results by category', async ({ page }) => {
   const homePage = new HomePage(page);
 

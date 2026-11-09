@@ -64,6 +64,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - Keep UI and API base URLs independently configurable.
 - Use accessible UI locators and Page Objects for page-specific interactions; keep business expectations in the tests.
 - Keep each test independent. Do not rely on shared browser storage state or execution order.
+- Use executable Gherkin selectively for stakeholder-facing behavior; keep implementation details and simple assertions in regular Playwright tests to avoid duplicating test intent.
 - Acquire authorization tokens through the documented login endpoint in a scoped fixture. Keep tokens in memory, attach them only to the API context that needs them, and never print them.
 - Validate API response status and relevant response fields. Parse JSON as untrusted input and fail explicitly if required fields are missing.
 - Keep a small number of mocked UI tests for deterministic boundary states, such as an empty catalog. Label them clearly and retain real API/UI checks; mocks validate frontend behavior for a controlled response, not the live integration.
@@ -84,6 +85,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
 - **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Selected read-only catalog/product tests can also be manually run in Firefox and WebKit. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
 - **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
+- **Parallel-readiness check:** use the dedicated two-worker, zero-retry command for evaluation and inspect JSON duration/retry results. Trials against the shared hosted service exposed intermittent sorting and sample-login failures; keep `fullyParallel` disabled until repeatability is shown in a stable isolated target.
 - **Browsers:** Chromium is the baseline. Firefox and WebKit are opt-in for selected read-only catalog/product flows to limit routine CI cost and shared-service traffic.
 - **Responsive:** emulate representative mobile, tablet, desktop, touch, and mobile landscape conditions. Describe results as browser emulation, not physical-device coverage.
 - **Mocking:** PST-015 intercepts the products API with an empty paginated response and verifies the catalog remains usable. The test still loads the hosted web application, so it does not remove that external dependency.
