@@ -80,7 +80,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 
 - **Local primary target:** public Toolshop web app and API, using only small read-only requests and published demo accounts.
 - **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
-- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Dependabot checks npm and GitHub Actions dependencies. The CodeQL job is gated on the `CODE_SCANNING_ENABLED` repository variable until code scanning is enabled in repository settings. Artifacts retain reports and failure traces/screenshots, not videos.
+- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
 - **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
 - **Browsers:** start with Chromium; add Firefox and WebKit for high-priority flows after the baseline is reliable.
 - **Responsive:** use representative Playwright viewport/device emulation. Describe it as emulation, not physical-device coverage.
@@ -132,5 +132,5 @@ Passing tests do not prove the absence of defects or validate behavior outside t
 - Playwright and TypeScript framework configuration for the web app and API.
 - UI and API tests for documented, non-destructive Toolshop scenarios.
 - Reusable Page Objects, API fixtures, and test data.
-- GitHub Actions CI, Dependabot update configuration, and Playwright diagnostic reports. CodeQL analysis runs when the repository enables code scanning and sets `CODE_SCANNING_ENABLED` to `true`.
+- GitHub Actions CI, Dependabot update configuration, and Playwright diagnostic reports.
 - README with verified setup, run commands, scope, limitations, and upstream references.

@@ -47,7 +47,7 @@ npm run build
 
 GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. UI tests against the public demo can be started manually from the Playwright CI workflow because the hosted site did not reliably render pages from GitHub-hosted runners. Reports and failure diagnostics are retained as workflow artifacts; video recording is disabled to keep artifacts small.
 
-Dependabot checks npm and GitHub Actions dependencies weekly. The CodeQL job is gated on the repository variable `CODE_SCANNING_ENABLED` because GitHub reports that code scanning is not enabled. To activate it, enable code scanning under **Settings → Security → Code security and analysis** and set that repository variable to `true`. No lint workflow is configured yet; do not treat TypeScript compilation as a substitute for formatting/lint checks.
+Dependabot checks npm and GitHub Actions dependencies weekly. No lint or code-scanning workflow is configured yet; do not treat TypeScript compilation as a substitute for formatting, lint, or security analysis.
 
 Playwright uses two workers locally and one worker in CI. Full parallel execution (`fullyParallel`) is intentionally deferred until tests and data isolation are proven stable.
 
