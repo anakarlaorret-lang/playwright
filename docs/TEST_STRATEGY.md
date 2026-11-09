@@ -67,6 +67,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - Acquire authorization tokens through the documented login endpoint in a scoped fixture. Keep tokens in memory, attach them only to the API context that needs them, and never print them.
 - Validate API response status and relevant response fields. Parse JSON as untrusted input and fail explicitly if required fields are missing.
 - Keep a small number of mocked UI tests for deterministic boundary states, such as an empty catalog. Label them clearly and retain real API/UI checks; mocks validate frontend behavior for a controlled response, not the live integration.
+- Run axe scans on the home and login pages for selected WCAG A/AA rules. Attach full results and fail on findings outside the explicitly documented baseline observed in the public application (language selector accessible name and login button name). Automated scans detect only a subset of accessibility issues and are not a conformance claim; pair them with manual review where accessibility is in scope.
 - Avoid fixed sleeps. Local runs do not retry failed tests; CI retries once to mitigate transient failures while preserving the original attempt in the report. Investigate recurring instability rather than relying on retries.
 - Configure two Playwright workers for local runs and one worker in CI to limit concurrent traffic against the shared public application/API. Increase parallelism only after the target and tests have demonstrated stable behavior.
 - Use generated data only for an authorized target where cleanup is possible. The hosted target's persistent resources must not be modified by this suite.
@@ -81,12 +82,14 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 
 - **Local primary target:** public Toolshop web app and API, using only small read-only requests and published demo accounts.
 - **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
-- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
+- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Selected read-only catalog/product tests can also be manually run in Firefox and WebKit. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
 - **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
-- **Browsers:** start with Chromium; add Firefox and WebKit for high-priority flows after the baseline is reliable.
+- **Browsers:** Chromium is the baseline. Firefox and WebKit are opt-in for selected read-only catalog/product flows to limit routine CI cost and shared-service traffic.
 - **Responsive:** emulate representative mobile, tablet, desktop, touch, and mobile landscape conditions. Describe results as browser emulation, not physical-device coverage.
 - **Mocking:** PST-015 intercepts the products API with an empty paginated response and verifies the catalog remains usable. The test still loads the hosted web application, so it does not remove that external dependency.
-- Publish Playwright HTML reports and retain traces/screenshots on failure where useful. Do not include bearer tokens, authentication state, or unnecessary personal data in artifacts.
+- Publish Playwright HTML and JSON reports and retain traces/screenshots on failure where useful. JSON records per-test duration and retry outcomes for flakiness/efficiency review. Do not include bearer tokens, authentication state, or unnecessary personal data in artifacts.
+- **Sustainability:** limit routine CI to build/API checks, run public-host UI and cross-browser suites only when needed, retain diagnostics briefly, and use duration/retry evidence to remove redundant work. These are efficiency practices, not a measured carbon footprint or SCI claim.
+- **AI-assisted QA:** treat AI as an optional ideation aid only. Use non-sensitive inputs, review proposed cases against requirements, and retain human-owned expected results and test oracles.
 - Distinguish application failures from public service outages or shared-data changes.
 
 ## 8. Entry and exit criteria

@@ -14,6 +14,7 @@
     "undici-types": "^6.20.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "^1.64.0",
     "@types/node": "^26.6.5",
     "typescript": "^5.9.3"
@@ -21,6 +22,7 @@
   "scripts": {
     "build": "npx tsc",
     "test": "npx playwright test",
+    "test:cross-browser": "playwright test --project=firefox --project=webkit tests/homepage.spec.ts tests/product.spec.ts",
     "report": "playwright show-report"
   },
   "repository": {

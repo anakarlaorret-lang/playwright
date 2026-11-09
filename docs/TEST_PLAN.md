@@ -27,12 +27,13 @@ This plan describes planned coverage; it does not imply every scenario is implem
 | PST-013 | P1 | UI | Open a product from the catalog | Product detail route and selected product heading are displayed. | Implemented |
 | PST-014 | P1 | UI | Add a product to cart and verify item/total | Cart reflects the added product and its price. | Planned (isolated environment only) |
 | PST-015 | P2 | UI (mocked API) | Return an empty products response from the API | Catalog controls remain available and no product cards are rendered. | Implemented |
+| PST-016 | P1 | UI accessibility | Scan home and login pages against automated WCAG A/AA rules | axe attaches full findings and fails on violations outside the documented baseline; this is not a full conformance claim. | Implemented |
 
 ## Execution order
 
 1. Keep the implemented PST-001 through PST-013 baseline stable in local runs and Chromium CI.
 2. Keep API tests in push/PR CI; trigger public-host UI tests manually and record external-site availability separately.
-3. Add Firefox/WebKit coverage for the highest-risk read-only UI flows.
+3. Run selected read-only catalog/product UI flows in Firefox and WebKit manually when cross-browser evidence is needed.
 4. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
 5. Evaluate a small Gherkin pilot for high-value business scenarios; adopt it only if the feature language improves collaboration without duplicating test intent or adding unnecessary maintenance.
 6. Enable `fullyParallel` only after all tests are demonstrably independent, fixtures and data are isolated, and repeated parallel runs remain stable against the selected environment.
@@ -42,6 +43,9 @@ This plan describes planned coverage; it does not imply every scenario is implem
 - **Gherkin pilot:** select one or two stakeholder-facing scenarios, map Given/When/Then steps to reusable Playwright code, and compare readability and maintenance against the current TypeScript tests before deciding whether to expand.
 - **Full parallel execution:** first make tests independent of ordering and shared mutable state; then enable `fullyParallel: true` and validate with repeated runs at multiple worker counts. Keep it disabled against the shared hosted service until its rate limits and concurrent behavior are understood.
 - **Responsive emulation:** coverage includes mobile and desktop viewports, a tablet viewport, touch interaction with mobile filters, and a compact mobile landscape viewport. These are browser emulation checks, not physical-device coverage.
+- **Accessibility:** automated axe checks cover the home and login pages for selected WCAG A/AA rules. The current public application has known findings for the language selector accessible name and a login-page button name; these are documented as baseline, attached to test results, and new findings fail the tests. Automated scans catch only some issues and do not establish WCAG conformance; manual assessment remains necessary.
+- **Efficient test execution:** CI exports Playwright JSON results with per-test durations, retry counts, and outcomes. Use this evidence to investigate flaky or slow tests rather than increasing retries by default.
+- **AI-assisted QA:** any future pilot should use non-sensitive scenarios, require human validation of generated cases, and keep AI output out of the pass/fail oracle unless independently verified.
 
 ## Shared-service safety
 

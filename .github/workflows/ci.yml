@@ -10,6 +10,11 @@ on:
         required: false
         type: boolean
         default: false
+      run_cross_browser:
+        description: Run selected read-only UI tests in Firefox and WebKit
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -73,7 +78,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run UI tests against hosted demo
-        run: npx playwright test tests/homepage.spec.ts tests/login.spec.ts tests/mocking.spec.ts tests/product.spec.ts tests/responsive.spec.ts
+        run: npx playwright test --project=chromium tests/accessibility.spec.ts tests/homepage.spec.ts tests/login.spec.ts tests/mocking.spec.ts tests/product.spec.ts tests/responsive.spec.ts
 
       - name: Upload UI test report and diagnostics
         if: always()
@@ -84,5 +89,39 @@ jobs:
             playwright-report/
             test-results/
             !test-results/**/*.webm
+          retention-days: 7
+          if-no-files-found: ignore
+
+  cross-browser:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_cross_browser
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Firefox and WebKit
+        run: npx playwright install --with-deps firefox webkit
+
+      - name: Run selected read-only UI tests
+        run: npx playwright test --project=firefox --project=webkit tests/homepage.spec.ts tests/product.spec.ts
+
+      - name: Upload cross-browser report and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-browser-test-results
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 7
           if-no-files-found: ignore

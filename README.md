@@ -14,14 +14,14 @@ Playwright Test and TypeScript portfolio framework for the [Practice Software Te
 
 Implemented coverage:
 
-- Toolshop home page smoke check.
+- Toolshop home page smoke check and automated axe accessibility scans of the home and login pages.
 - Catalog search, category filtering, and name sorting.
 - Customer login through the UI, including invalid credentials and malformed-email validation.
 - Product detail navigation; mobile catalog/login and desktop catalog viewport checks.
 - Read-only API health, products, and categories checks.
 - Customer/admin API login that obtains bearer tokens in memory, checks their role claims, and validates protected `/users/me` profile responses.
 
-Planned work includes broader Firefox/WebKit coverage, cart workflows in an isolated environment, a limited Gherkin pilot, and evaluating `fullyParallel` after proving test independence. The hosted demo suite remains read-only except for authentication attempts.
+Planned work includes cart workflows in an isolated environment, a limited Gherkin pilot, and evaluating `fullyParallel` after proving test independence. Selected read-only catalog/product UI tests can be run manually in Firefox and WebKit. The hosted demo suite remains read-only except for authentication attempts.
 
 The public environment is shared. Current tests avoid creating or modifying persistent resources and do not run load, stress, security, or destructive tests.
 
@@ -39,13 +39,20 @@ npm test
 npx playwright show-report
 ```
 
+For the selected Firefox/WebKit smoke tests:
+
+```bash
+npx playwright install firefox webkit
+npm run test:cross-browser
+```
+
 Run TypeScript compilation:
 
 ```bash
 npm run build
 ```
 
-GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. UI tests against the public demo can be started manually from the Playwright CI workflow because the hosted site did not reliably render pages from GitHub-hosted runners. Reports and failure diagnostics are retained as workflow artifacts; video recording is disabled to keep artifacts small.
+GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. UI tests against the public demo and selected Firefox/WebKit runs can be started manually from the Playwright CI workflow because the hosted site did not reliably render pages from GitHub-hosted runners. HTML/JSON reports and failure diagnostics are retained as workflow artifacts; the JSON report includes test durations and retry outcomes. Video recording is disabled to keep artifacts small.
 
 Dependabot checks npm and GitHub Actions dependencies weekly. No lint or code-scanning workflow is configured yet; do not treat TypeScript compilation as a substitute for formatting, lint, or security analysis.
 

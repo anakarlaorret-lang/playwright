@@ -6,7 +6,11 @@ export default defineConfig({
 
   retries: process.env.CI ? 1 : 0,
 
-  reporter: [['html'], ['list']],
+  reporter: [
+    ['html'],
+    ['list'],
+    ['json', { outputFile: 'test-results/results.json' }],
+  ],
 
   use: {
     baseURL: environment.webBaseURL,
@@ -16,4 +20,21 @@ export default defineConfig({
   },
 
   workers: process.env.CI ? 1 : 2,
+
+  projects: [
+    {
+      name: 'chromium',
+      use: { browserName: 'chromium' },
+    },
+    {
+      name: 'firefox',
+      testMatch: [/homepage\.spec\.ts/, /product\.spec\.ts/],
+      use: { browserName: 'firefox' },
+    },
+    {
+      name: 'webkit',
+      testMatch: [/homepage\.spec\.ts/, /product\.spec\.ts/],
+      use: { browserName: 'webkit' },
+    },
+  ],
 });
