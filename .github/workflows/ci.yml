@@ -73,7 +73,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run UI tests against hosted demo
-        run: npx playwright test tests/homepage.spec.ts tests/login.spec.ts tests/product.spec.ts tests/responsive.spec.ts
+        run: npx playwright test tests/homepage.spec.ts tests/login.spec.ts tests/mocking.spec.ts tests/product.spec.ts tests/responsive.spec.ts
 
       - name: Upload UI test report and diagnostics
         if: always()

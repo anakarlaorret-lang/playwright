@@ -66,6 +66,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - Keep each test independent. Do not rely on shared browser storage state or execution order.
 - Acquire authorization tokens through the documented login endpoint in a scoped fixture. Keep tokens in memory, attach them only to the API context that needs them, and never print them.
 - Validate API response status and relevant response fields. Parse JSON as untrusted input and fail explicitly if required fields are missing.
+- Keep a small number of mocked UI tests for deterministic boundary states, such as an empty catalog. Label them clearly and retain real API/UI checks; mocks validate frontend behavior for a controlled response, not the live integration.
 - Avoid fixed sleeps. Local runs do not retry failed tests; CI retries once to mitigate transient failures while preserving the original attempt in the report. Investigate recurring instability rather than relying on retries.
 - Configure two Playwright workers for local runs and one worker in CI to limit concurrent traffic against the shared public application/API. Increase parallelism only after the target and tests have demonstrated stable behavior.
 - Use generated data only for an authorized target where cleanup is possible. The hosted target's persistent resources must not be modified by this suite.
@@ -83,7 +84,8 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
 - **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
 - **Browsers:** start with Chromium; add Firefox and WebKit for high-priority flows after the baseline is reliable.
-- **Responsive:** use representative Playwright viewport/device emulation. Describe it as emulation, not physical-device coverage.
+- **Responsive:** emulate representative mobile, tablet, desktop, touch, and mobile landscape conditions. Describe results as browser emulation, not physical-device coverage.
+- **Mocking:** PST-015 intercepts the products API with an empty paginated response and verifies the catalog remains usable. The test still loads the hosted web application, so it does not remove that external dependency.
 - Publish Playwright HTML reports and retain traces/screenshots on failure where useful. Do not include bearer tokens, authentication state, or unnecessary personal data in artifacts.
 - Distinguish application failures from public service outages or shared-data changes.
 

@@ -1,6 +1,15 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
+
+async function expectNoHorizontalOverflow(page: Page): Promise<void> {
+  const hasNoHorizontalOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth <=
+      document.documentElement.clientWidth
+  );
+  expect(hasNoHorizontalOverflow).toBe(true);
+}
 
 test.describe('Responsive catalog', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,12 +26,7 @@ test.describe('Responsive catalog', () => {
     await homePage.openMobileFilters();
     await expect(homePage.searchInput).toBeVisible();
     await expect(homePage.productCards.first()).toBeVisible();
-    const hasNoHorizontalOverflow = await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth
-    );
-    expect(hasNoHorizontalOverflow).toBe(true);
+    await expectNoHorizontalOverflow(page);
   });
 });
 
@@ -42,6 +46,66 @@ test.describe('Responsive login', () => {
   });
 });
 
+test('PST-009 keeps catalog controls usable at a tablet viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 768, height: 1024 });
+  const homePage = new HomePage(page);
+
+  await homePage.goto();
+
+  await expect(homePage.pageHeading).toBeVisible();
+  await expect(homePage.searchInput).toBeVisible();
+  await expect(homePage.productCards.first()).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+test.describe('Touch mobile catalog emulation', () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 2,
+  });
+
+  test('PST-009 opens catalog filters with a touch interaction', async ({
+    page,
+  }) => {
+    const homePage = new HomePage(page);
+
+    await homePage.goto();
+
+    await expect(homePage.pageHeading).toBeVisible();
+    await homePage.mobileFiltersButton.tap();
+    await expect(homePage.searchInput).toBeVisible();
+    await expect(homePage.productCards.first()).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+});
+
+test.describe('Mobile landscape catalog emulation', () => {
+  test.use({
+    viewport: { width: 667, height: 375 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 2,
+  });
+
+  test('PST-009 keeps catalog controls usable in mobile landscape', async ({
+    page,
+  }) => {
+    const homePage = new HomePage(page);
+
+    await homePage.goto();
+
+    await expect(homePage.pageHeading).toBeVisible();
+    await homePage.mobileFiltersButton.tap();
+    await expect(homePage.searchInput).toBeVisible();
+    await expect(homePage.productCards.first()).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+});
+
 test('PST-009 keeps catalog controls usable on a desktop viewport', async ({
   page,
 }) => {
@@ -54,10 +118,5 @@ test('PST-009 keeps catalog controls usable on a desktop viewport', async ({
   await expect(homePage.searchInput).toBeVisible();
   await expect(homePage.sortSelect).toBeVisible();
   await expect(homePage.productCards.first()).toBeVisible();
-  const hasNoHorizontalOverflow = await page.evaluate(
-    () =>
-      document.documentElement.scrollWidth <=
-      document.documentElement.clientWidth
-  );
-  expect(hasNoHorizontalOverflow).toBe(true);
+  await expectNoHorizontalOverflow(page);
 });

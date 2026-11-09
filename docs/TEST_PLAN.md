@@ -26,6 +26,7 @@ This plan describes planned coverage; it does not imply every scenario is implem
 | PST-012 | P2 | UI | Submit a malformed email address | Browser email validation prevents successful form submission. | Implemented |
 | PST-013 | P1 | UI | Open a product from the catalog | Product detail route and selected product heading are displayed. | Implemented |
 | PST-014 | P1 | UI | Add a product to cart and verify item/total | Cart reflects the added product and its price. | Planned (isolated environment only) |
+| PST-015 | P2 | UI (mocked API) | Return an empty products response from the API | Catalog controls remain available and no product cards are rendered. | Implemented |
 
 ## Execution order
 
@@ -40,6 +41,7 @@ This plan describes planned coverage; it does not imply every scenario is implem
 
 - **Gherkin pilot:** select one or two stakeholder-facing scenarios, map Given/When/Then steps to reusable Playwright code, and compare readability and maintenance against the current TypeScript tests before deciding whether to expand.
 - **Full parallel execution:** first make tests independent of ordering and shared mutable state; then enable `fullyParallel: true` and validate with repeated runs at multiple worker counts. Keep it disabled against the shared hosted service until its rate limits and concurrent behavior are understood.
+- **Responsive emulation:** coverage includes mobile and desktop viewports, a tablet viewport, touch interaction with mobile filters, and a compact mobile landscape viewport. These are browser emulation checks, not physical-device coverage.
 
 ## Shared-service safety
 
