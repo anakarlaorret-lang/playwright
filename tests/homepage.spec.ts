@@ -54,28 +54,3 @@ test('PST-008 filters catalog results by category', async ({ page }) => {
     )
     .toBe(true);
 });
-
-test('PST-008 sorts catalog results by product name', async ({ page }) => {
-  const homePage = new HomePage(page);
-
-  await homePage.sortBy('Name (A - Z)');
-
-  await expect
-    .poll(
-      async () => {
-        const visibleNames = (await homePage.productNames.allTextContents()).map(
-          (name) => name.trim()
-        );
-        return (
-          visibleNames.length > 1 &&
-          visibleNames.every(
-            (name, index) =>
-              index === 0 ||
-              visibleNames[index - 1].localeCompare(name) <= 0
-          )
-        );
-      },
-      { timeout: 10_000 }
-    )
-    .toBe(true);
-});

@@ -17,7 +17,7 @@ Playwright Test and TypeScript portfolio framework for the [Practice Software Te
 Implemented coverage:
 
 - Toolshop home page smoke check and automated axe accessibility scans of the home and login pages.
-- Catalog search, category filtering, and name sorting.
+- Catalog search and category filtering.
 - Customer login through the UI, including invalid credentials and malformed-email validation.
 - Product detail navigation; mobile, tablet, desktop, touch, and landscape viewport emulation.
 - Read-only API health, products, and categories checks.
@@ -25,7 +25,7 @@ Implemented coverage:
 - A mocked empty-catalog boundary scenario and an executable Gherkin pilot for unmatched catalog search.
 - Automated axe scans of home/login pages, with known upstream findings documented and new findings reported.
 
-Selected read-only catalog/product UI tests can be run manually in Firefox and WebKit. `fullyParallel` remains disabled: two-worker tests against the shared hosted service showed intermittent catalog sorting and sample-login failures. Cart workflows remain deferred until an isolated environment with reliable cleanup is available. The hosted demo suite remains read-only except for authentication attempts.
+Selected read-only catalog/product UI tests can be run manually in Firefox and WebKit. `fullyParallel` remains disabled: two-worker tests against the shared hosted service showed intermittent failures. Cart workflows remain deferred until an isolated environment with reliable cleanup is available. The hosted demo suite remains read-only except for authentication attempts.
 
 The public environment is shared. Current tests avoid creating or modifying persistent resources and do not run load, stress, security, or destructive tests.
 

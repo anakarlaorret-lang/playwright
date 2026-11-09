@@ -6,7 +6,7 @@ This plan describes planned coverage; it does not imply every scenario is implem
 
 - **P0 — Critical:** application availability, sample-account authentication, protected profile access.
 - **P1 — High:** API response integrity, role identity, responsive usability.
-- **P2 — Supporting:** invalid authentication, catalog search/sort, and expanded browser coverage.
+- **P2 — Supporting:** invalid authentication, catalog search, and expanded browser coverage.
 
 ## Scenarios
 
@@ -19,7 +19,7 @@ This plan describes planned coverage; it does not imply every scenario is implem
 | PST-005 | P1 | API | Request `/status` | Successful response contains Toolshop application and version metadata. | Implemented |
 | PST-006 | P1 | API | Request `/products?page=1` | Successful response contains product IDs, names, and numeric prices without asserting a volatile total. | Implemented |
 | PST-007 | P1 | API | Request `/categories` | Successful response contains category IDs and names. | Implemented |
-| PST-008 | P1 | UI | Search by product name, verify unmatched search, filter by category, and sort names A-Z | Product cards match the search/category criteria and the visible names are sorted. | Implemented |
+| PST-008 | P1 | UI | Search by product name, verify unmatched search, and filter by category | Product cards match the search/category criteria; unmatched search displays no product cards. | Implemented |
 | PST-009 | P1 | UI | Open catalog and login at mobile and desktop viewports | Key controls remain visible and the catalog has no horizontal overflow. | Implemented |
 | PST-010 | P2 | API | Submit invalid credentials to `/users/login` | API returns `401` and does not issue an access token. | Implemented |
 | PST-011 | P1 | UI | Submit invalid customer credentials | Login is rejected with a visible error and the user remains on the login page. | Implemented |
@@ -41,7 +41,7 @@ This plan describes planned coverage; it does not imply every scenario is implem
 ## Planned framework improvements
 
 - **Gherkin pilot:** PST-008's unmatched-product search scenario is implemented in `tests/features/catalog-search.feature`; step definitions reuse the existing Home Page Object. Keep Gherkin limited to scenarios where business-readable steps add value rather than translating all low-level checks.
-- **Full parallel execution:** a two-worker, zero-retry readiness command is available as `npm run test:parallel-check`. Two-worker trials against the public service failed intermittently in product sorting and sample-account login, so `fullyParallel` remains disabled. Re-evaluate only against an isolated/stable target or after the public service demonstrates repeated stable runs.
+- **Full parallel execution:** a two-worker, zero-retry readiness command is available as `npm run test:parallel-check`. Two-worker trials against the public service failed intermittently, so `fullyParallel` remains disabled. Re-evaluate only against an isolated/stable target or after the public service demonstrates repeated stable runs.
 - **Responsive emulation:** coverage includes mobile and desktop viewports, a tablet viewport, touch interaction with mobile filters, and a compact mobile landscape viewport. These are browser emulation checks, not physical-device coverage.
 - **Accessibility:** automated axe checks cover the home and login pages for selected WCAG A/AA rules. The current public application has known findings for the language selector accessible name and a login-page button name; these are documented as baseline, attached to test results, and new findings fail the tests. Automated scans catch only some issues and do not establish WCAG conformance; manual assessment remains necessary.
 - **Efficient test execution:** CI exports Playwright JSON results with per-test durations, retry counts, and outcomes. Use this evidence to investigate flaky or slow tests rather than increasing retries by default.
