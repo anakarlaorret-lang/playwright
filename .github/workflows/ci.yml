@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload API test report and diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: api-test-results
           path: |
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload UI test report and diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ui-test-results
           path: |
@@ -117,7 +117,7 @@ jobs:
 
       - name: Upload cross-browser report and diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cross-browser-test-results
           path: |
