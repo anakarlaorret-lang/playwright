@@ -7,13 +7,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "types": ["node"],
-    "baseUrl": "./",
-    "paths": {
-        "@pages/*": ["pages/*"],
-        "@utils/*": ["utils/*"],
-        "@tests/*": ["tests/*"]
-    }
+    "types": ["node"]
   },
   "include": ["tests", "pages", "utils"]
 }
