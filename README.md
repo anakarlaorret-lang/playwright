@@ -45,7 +45,9 @@ Run TypeScript compilation:
 npm run build
 ```
 
-The GitHub Actions workflow runs the build and Chromium tests for pushes and pull requests. It stores the HTML report and failure diagnostics as workflow artifacts.
+GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. UI tests against the public demo can be started manually from the Playwright CI workflow because the hosted site did not reliably render pages from GitHub-hosted runners. Reports and failure diagnostics are retained as workflow artifacts; video recording is disabled to keep artifacts small.
+
+CodeQL analyzes the TypeScript project, and Dependabot checks npm and GitHub Actions dependencies weekly. No lint workflow is configured yet; do not treat CodeQL or TypeScript compilation as a substitute for formatting/lint checks.
 
 Playwright uses two workers locally and one worker in CI. Full parallel execution (`fullyParallel`) is intentionally deferred until tests and data isolation are proven stable.
 

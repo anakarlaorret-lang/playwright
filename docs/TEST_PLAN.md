@@ -30,10 +30,11 @@ This plan describes planned coverage; it does not imply every scenario is implem
 ## Execution order
 
 1. Keep the implemented PST-001 through PST-013 baseline stable in local runs and Chromium CI.
-2. Add Firefox/WebKit coverage for the highest-risk read-only UI flows.
-3. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
-4. Evaluate a small Gherkin pilot for high-value business scenarios; adopt it only if the feature language improves collaboration without duplicating test intent or adding unnecessary maintenance.
-5. Enable `fullyParallel` only after all tests are demonstrably independent, fixtures and data are isolated, and repeated parallel runs remain stable against the selected environment.
+2. Keep API tests in push/PR CI; trigger public-host UI tests manually and record external-site availability separately.
+3. Add Firefox/WebKit coverage for the highest-risk read-only UI flows.
+4. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
+5. Evaluate a small Gherkin pilot for high-value business scenarios; adopt it only if the feature language improves collaboration without duplicating test intent or adding unnecessary maintenance.
+6. Enable `fullyParallel` only after all tests are demonstrably independent, fixtures and data are isolated, and repeated parallel runs remain stable against the selected environment.
 
 ## Planned framework improvements
 

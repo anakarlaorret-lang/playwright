@@ -80,7 +80,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 
 - **Local primary target:** public Toolshop web app and API, using only small read-only requests and published demo accounts.
 - **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
-- **CI:** GitHub Actions runs the TypeScript build and Chromium suite on pushes and pull requests. It publishes the Playwright HTML report and failure diagnostics as short-retention artifacts. Keep secrets out of logs and uploaded artifacts.
+- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site did not reliably render pages from GitHub-hosted runners. CodeQL scans the TypeScript project and Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
 - **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
 - **Browsers:** start with Chromium; add Firefox and WebKit for high-priority flows after the baseline is reliable.
 - **Responsive:** use representative Playwright viewport/device emulation. Describe it as emulation, not physical-device coverage.
@@ -121,7 +121,7 @@ Assertions should verify documented contracts and user-visible outcomes. Avoid a
 - Stable outcome and response-shape checks for each API scenario.
 - Verified user/admin identity and role behavior without exposing tokens.
 - Flaky-test and repeat-failure trends.
-- CI status, run time, and useful failure artifact publication.
+- CI status, run time, and useful failure artifact publication; distinguish API CI results from manually triggered public-site UI checks.
 - Responsive viewport and browser coverage accurately represented.
 
 Passing tests do not prove the absence of defects or validate behavior outside the documented scope.
@@ -132,5 +132,5 @@ Passing tests do not prove the absence of defects or validate behavior outside t
 - Playwright and TypeScript framework configuration for the web app and API.
 - UI and API tests for documented, non-destructive Toolshop scenarios.
 - Reusable Page Objects, API fixtures, and test data.
-- GitHub Actions CI workflow and Playwright diagnostic reports.
+- GitHub Actions CI, CodeQL analysis, Dependabot update configuration, and Playwright diagnostic reports.
 - README with verified setup, run commands, scope, limitations, and upstream references.

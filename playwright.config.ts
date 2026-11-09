@@ -12,7 +12,6 @@ export default defineConfig({
     baseURL: environment.webBaseURL,
     headless: true,
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
     trace: 'retain-on-failure',
   },
 
