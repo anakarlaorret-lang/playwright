@@ -95,7 +95,8 @@ jobs:
           if-no-files-found: ignore
 
   cross-browser:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_cross_browser
+    needs: ui-tests
+    if: always() && github.event_name == 'workflow_dispatch' && inputs.run_cross_browser
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
