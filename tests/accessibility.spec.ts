@@ -51,5 +51,11 @@ test('MOV-007 landing page has no untriaged WCAG A/AA violations', async ({
     'color-contrast:.pm-b.pm.demo-arrive:nth-child(2) > strong:nth-child(5)',
     'color-contrast:strong:nth-child(7)',
     'color-contrast:strong:nth-child(9)',
+    'label-content-name-mismatch:.nav-btn',
+    'label-content-name-mismatch:.hero-actions > .btn-main[target="_blank"][rel="noopener noreferrer"]',
+    'label-content-name-mismatch:.fit-card[target="_blank"][rel="noopener noreferrer"]:nth-child(1)',
+    'label-content-name-mismatch:.fit-card[target="_blank"][rel="noopener noreferrer"]:nth-child(2)',
+    'label-content-name-mismatch:.fit-card[target="_blank"][rel="noopener noreferrer"]:nth-child(3)',
+    'label-content-name-mismatch:.carrier-copy > .btn-main[target="_blank"][rel="noopener noreferrer"]',
   ]);
 });

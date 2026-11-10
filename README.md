@@ -14,7 +14,7 @@ This portfolio uses Playwright Test and TypeScript to demonstrate UI automation 
 - TypeScript compilation, Chromium UI/API tests on pushes and pull requests, and optional Firefox/WebKit smoke tests.
 
 The UI suite does not claim coverage of Movelo's WhatsApp service, operational backend, customer data, or database. No form submissions or state-changing workflows are part of this suite.
-The accessibility scan retains a documented baseline of existing color-contrast findings in the public page; additional findings fail the check.
+The accessibility scan retains a documented, narrow baseline of known color-contrast and accessible-name findings on the external public page. Only the exact recorded rule/selector pairs are accepted; new findings fail the check. See the [accessibility findings and baseline policy](docs/TEST_STRATEGY.md#known-accessibility-findings). This scan is not an accessibility certification.
 
 ## Requirements and local runs
 

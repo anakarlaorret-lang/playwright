@@ -52,9 +52,18 @@ Assertions focus on user-visible behavior and documented response contracts. Avo
 - Verify WhatsApp links by inspecting their `href` and target attributes. Do not follow these links or send messages.
 - Use native `<details>`/`<summary>` interaction for FAQ coverage rather than implementation-specific event handlers.
 - Keep Gherkin limited to the single business-readable quote-link scenario; retain lower-level assertions in regular Playwright tests.
-- Run axe on the landing page and attach complete results. The current baseline contains color-contrast findings in the navigation/CTA copy and illustrative chat animation; new findings fail the scan. Results are not a full accessibility conformance claim.
+- Run axe on the landing page and attach complete results. The baseline includes the documented Movelo contrast and label/name mismatch findings below; any finding with a different rule-and-selector pair fails the scan. These are known, temporarily accepted issues in an external site that this repository cannot modify, not evidence of WCAG conformance. Reassess the baseline when the site changes and remove entries when the owner resolves them.
 - Keep two workers locally and one worker in CI. Do not increase parallelism or retries to hide instability.
 - Store only reports and failure diagnostics for seven days; video is disabled to limit unnecessary artifacts.
+
+### Known accessibility findings
+
+The following findings were observed in the Movelo scan in [CI run #72](https://github.com/anakarlaorret-lang/playwright/actions/runs/42877625595) on 2026-11-10. They are tracked as external, temporarily accepted findings because the suite targets Movelo's public hosted site and does not have access to its source. The `label-content-name-mismatch` rule indicates that a control's accessible name does not match its visible label, which can affect users who rely on speech input or assistive technology.
+
+- **Color contrast:** Existing findings in the navigation, CTA copy, and illustrative chat animation. Their exact rule-and-selector pairs are listed in the MOV-007 baseline in `tests/accessibility.spec.ts`.
+- **Label/name mismatch (`label-content-name-mismatch`):** `.nav-btn`; `.hero-actions > .btn-main[target="_blank"][rel="noopener noreferrer"]`; `.fit-card[target="_blank"][rel="noopener noreferrer"]:nth-child(1)`, `:nth-child(2)`, and `:nth-child(3)`; `.carrier-copy > .btn-main[target="_blank"][rel="noopener noreferrer"]`.
+
+The test excludes only these recorded rule-and-selector pairs. Any additional selector or violation rule remains unexpected and fails CI. Recheck the live page periodically; remove a baseline entry once the issue is resolved and do not describe the scan as an accessibility certification.
 
 ## 7. Environments and execution
 

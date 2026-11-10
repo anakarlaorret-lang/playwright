@@ -18,7 +18,7 @@ This plan describes active coverage only. See [TEST_STRATEGY.md](./TEST_STRATEGY
 | MOV-004 | P1 | Movelo UI | Use the page at a mobile viewport | Hero and primary request CTA remain visible with no horizontal overflow. | Implemented |
 | MOV-005 | P1 | Movelo UI | Use navigation at a tablet viewport | Navigation and moving options remain visible with no horizontal overflow. | Implemented |
 | MOV-006 | P1 | Movelo UI | Render at a desktop viewport | Hero and primary CTA remain visible with no horizontal overflow. | Implemented |
-| MOV-007 | P2 | Movelo accessibility | Scan the landing page for selected WCAG A/AA rules | Axe results are attached; untriaged violations fail the check. | Implemented |
+| MOV-007 | P2 | Movelo accessibility | Scan the landing page for selected WCAG A/AA rules | Axe results are attached; new rule/selector findings fail, while documented external findings remain tracked. | Implemented; known findings documented |
 | MOV-008 | P2 | Movelo Gherkin | Prepare a furniture-move quote link | The visible option points to WhatsApp with a prefilled message and does not send it. | Implemented |
 | MOV-009 | P1 | Movelo UI | Expand and collapse an FAQ | The answer is shown on expansion and hidden on collapse. | Implemented |
 | PST-003 | P0 | Toolshop API | Authenticate the sample customer and read `/users/me` | Profile email and token role match the customer account. | Implemented |
@@ -42,6 +42,7 @@ This plan describes active coverage only. See [TEST_STRATEGY.md](./TEST_STRATEGY
 - Toolshop checks use only documented sample accounts and read-only API requests, including authentication.
 - No active test covers Movelo's backend, a database, payments, or operational workflows.
 - The public Movelo site remains a CI dependency until an authorized source/deployment setup is available.
+- MOV-007 has a narrow baseline of documented, temporarily accepted external accessibility findings; any new rule/selector finding fails the test. See [TEST_STRATEGY.md](./TEST_STRATEGY.md#known-accessibility-findings).
 
 ## Traceability
 
