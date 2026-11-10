@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       run_ui:
-        description: Run UI tests against the public hosted demo
+        description: Run UI tests against the public Movelo landing page
         required: false
         type: boolean
         default: false
@@ -58,7 +58,7 @@ jobs:
           if-no-files-found: ignore
 
   ui-tests:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_ui
+    if: github.event_name != 'workflow_dispatch' || inputs.run_ui
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -77,10 +77,10 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run UI tests against hosted demo
+      - name: Run UI tests against Movelo
         run: |
           npx bddgen
-          npx playwright test --project=chromium --project=gherkin tests/accessibility.spec.ts tests/homepage.spec.ts tests/login.spec.ts tests/mocking.spec.ts tests/product.spec.ts tests/responsive.spec.ts .features-gen
+          npx playwright test --project=chromium --project=gherkin tests/accessibility.spec.ts tests/homepage.spec.ts tests/interactions.spec.ts tests/responsive.spec.ts .features-gen
 
       - name: Upload UI test report and diagnostics
         if: always()
@@ -115,10 +115,10 @@ jobs:
       - name: Install Firefox and WebKit
         run: npx playwright install --with-deps firefox webkit
 
-      - name: Run selected read-only UI tests
+      - name: Run Movelo smoke tests in Firefox and WebKit
         run: |
           npx bddgen
-          npx playwright test --project=firefox --project=webkit tests/homepage.spec.ts tests/product.spec.ts
+          npx playwright test --project=firefox --project=webkit tests/homepage.spec.ts
 
       - name: Upload cross-browser report and diagnostics
         if: always()

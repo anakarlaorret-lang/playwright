@@ -29,12 +29,12 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      testMatch: [/homepage\.spec\.ts/, /product\.spec\.ts/],
+      testMatch: [/homepage\.spec\.ts/],
       use: { browserName: 'firefox' },
     },
     {
       name: 'webkit',
-      testMatch: [/homepage\.spec\.ts/, /product\.spec\.ts/],
+      testMatch: [/homepage\.spec\.ts/],
       use: { browserName: 'webkit' },
     },
     {

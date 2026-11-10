@@ -1,7 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
-import { LoginPage } from '../pages/LoginPage';
+import { MoveloHomePage } from '../pages/MoveloHomePage';
 
 async function scanAccessibility(
   page: Page,
@@ -27,23 +26,30 @@ async function scanAccessibility(
   expect(unexpectedFindings).toEqual([]);
 }
 
-test('PST-016 home page has no untriaged WCAG A/AA violations', async ({
+test('MOV-007 landing page has no untriaged WCAG A/AA violations', async ({
   page,
 }) => {
-  await new HomePage(page).goto();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await new MoveloHomePage(page).goto();
+  const activePauseButton = page
+    .locator('button[data-pause]:visible')
+    .filter({ hasText: 'Pausar' });
+  if ((await activePauseButton.count()) > 0) {
+    await activePauseButton.first().click();
+  }
 
-  await scanAccessibility(page, 'home', [
-    'label-content-name-mismatch:#language',
-  ]);
-});
-
-test('PST-016 login page has no untriaged WCAG A/AA violations', async ({
-  page,
-}) => {
-  await new LoginPage(page).goto();
-
-  await scanAccessibility(page, 'login', [
-    'label-content-name-mismatch:#language',
-    'button-name:.btn-outline-secondary',
+  await scanAccessibility(page, 'movelo-home', [
+    'color-contrast:.nav-btn',
+    'color-contrast:.hero-actions > .btn-main[target="_blank"][rel="noopener noreferrer"]',
+    'color-contrast:.hero-reassurance > span',
+    'color-contrast:.carrier-copy > .btn-main[target="_blank"][rel="noopener noreferrer"]',
+    'color-contrast:.is-paused > .phone-shell > .phone > .phone-input-bar[aria-hidden="true"] > .phone-input-field',
+    'color-contrast:.is-paused > .demo-controls > button[data-pause=""][type="button"]',
+    'color-contrast:.is-paused > .demo-controls > button[data-replay=""][type="button"]',
+    'color-contrast:.is-paused > .demo-note',
+    'color-contrast:.pm-b.pm.demo-arrive:nth-child(2) > strong:nth-child(3)',
+    'color-contrast:.pm-b.pm.demo-arrive:nth-child(2) > strong:nth-child(5)',
+    'color-contrast:strong:nth-child(7)',
+    'color-contrast:strong:nth-child(9)',
   ]);
 });

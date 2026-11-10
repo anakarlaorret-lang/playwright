@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
-import { LoginPage } from '../pages/LoginPage';
+import { MoveloHomePage } from '../pages/MoveloHomePage';
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const hasNoHorizontalOverflow = await page.evaluate(
@@ -11,112 +10,45 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(hasNoHorizontalOverflow).toBe(true);
 }
 
-test.describe('Responsive catalog', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await new HomePage(page).goto();
-  });
-
-  test('PST-009 keeps catalog controls usable on a mobile viewport', async ({
-    page,
-  }) => {
-    const homePage = new HomePage(page);
-
-    await expect(homePage.pageHeading).toBeVisible();
-    await homePage.openMobileFilters();
-    await expect(homePage.searchInput).toBeVisible();
-    await expect(homePage.productCards.first()).toBeVisible();
-    await expectNoHorizontalOverflow(page);
-  });
-});
-
-test.describe('Responsive login', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await new LoginPage(page).goto();
-  });
-
-  test('PST-009 keeps login controls usable on a mobile viewport', async ({
-    page,
-  }) => {
-    const loginPage = new LoginPage(page);
-
-    await expect(loginPage.emailInput).toBeVisible();
-    await expect(loginPage.passwordInput).toBeVisible();
-  });
-});
-
-test('PST-009 keeps catalog controls usable at a tablet viewport', async ({
+test('MOV-004 keeps the primary request visible on a mobile viewport', async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 768, height: 1024 });
-  const homePage = new HomePage(page);
-
+  await page.setViewportSize({ width: 390, height: 844 });
+  const homePage = new MoveloHomePage(page);
   await homePage.goto();
 
-  await expect(homePage.pageHeading).toBeVisible();
-  await expect(homePage.searchInput).toBeVisible();
-  await expect(homePage.productCards.first()).toBeVisible();
+  await expect(homePage.heading).toBeVisible();
+  await expect(homePage.primaryRequestLink).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
 
-test.describe('Touch mobile catalog emulation', () => {
-  test.use({
-    viewport: { width: 390, height: 844 },
-    isMobile: true,
-    hasTouch: true,
-    deviceScaleFactor: 2,
-  });
+test('MOV-005 keeps navigation and moving options usable on a tablet viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 768, height: 1024 });
+  const homePage = new MoveloHomePage(page);
+  await homePage.goto();
 
-  test('PST-009 opens catalog filters with a touch interaction', async ({
-    page,
-  }) => {
-    const homePage = new HomePage(page);
-
-    await homePage.goto();
-
-    await expect(homePage.pageHeading).toBeVisible();
-    await homePage.mobileFiltersButton.tap();
-    await expect(homePage.searchInput).toBeVisible();
-    await expect(homePage.productCards.first()).toBeVisible();
-    await expectNoHorizontalOverflow(page);
-  });
+  await expect(homePage.heading).toBeVisible();
+  const navigation = page.getByRole('navigation', { name: 'Principal' });
+  await navigation.getByRole('button', { name: 'Menú' }).click();
+  await expect(
+    page
+      .getByRole('dialog', { name: 'Menú móvil' })
+      .getByRole('link', { name: 'Qué podés mover' })
+  ).toBeVisible();
+  await expect(homePage.movingOptions).toBeVisible();
+  await expectNoHorizontalOverflow(page);
 });
 
-test.describe('Mobile landscape catalog emulation', () => {
-  test.use({
-    viewport: { width: 667, height: 375 },
-    isMobile: true,
-    hasTouch: true,
-    deviceScaleFactor: 2,
-  });
-
-  test('PST-009 keeps catalog controls usable in mobile landscape', async ({
-    page,
-  }) => {
-    const homePage = new HomePage(page);
-
-    await homePage.goto();
-
-    await expect(homePage.pageHeading).toBeVisible();
-    await homePage.mobileFiltersButton.tap();
-    await expect(homePage.searchInput).toBeVisible();
-    await expect(homePage.productCards.first()).toBeVisible();
-    await expectNoHorizontalOverflow(page);
-  });
-});
-
-test('PST-009 keeps catalog controls usable on a desktop viewport', async ({
+test('MOV-006 keeps the landing page within a desktop viewport', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  const homePage = new HomePage(page);
-
+  const homePage = new MoveloHomePage(page);
   await homePage.goto();
 
-  await expect(homePage.pageHeading).toBeVisible();
-  await expect(homePage.searchInput).toBeVisible();
-  await expect(homePage.sortSelect).toBeVisible();
-  await expect(homePage.productCards.first()).toBeVisible();
+  await expect(homePage.heading).toBeVisible();
+  await expect(homePage.primaryRequestLink).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });

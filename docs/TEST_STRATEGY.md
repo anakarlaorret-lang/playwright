@@ -1,143 +1,110 @@
-# Test Strategy — Practice Software Testing Portfolio
+# Test Strategy — Movelo UI and Toolshop API
 
 ## 1. Purpose
 
-This project is a professional portfolio and learning exercise for designing and maintaining a Playwright and TypeScript automation framework. The system under test is Practice Software Testing (Toolshop), a public training application with a browser UI and a documented REST API.
+This project is a professional portfolio and learning exercise for designing maintainable Playwright and TypeScript automation. The browser UI and API coverage intentionally target different systems because the public Movelo site is a landing page without a documented public API, while Toolshop provides a documented REST API and sample accounts.
 
-The portfolio aims to demonstrate practical QA judgment across UI and API layers, role-aware authentication, responsive browser testing, diagnostics, and maintainable automation. The public service is an external dependency, so tests must remain small, predictable, and respectful of shared state.
+## 2. Systems under test
 
-## 2. System under test and assumptions
+- **UI:** [Movelo](https://movelo.com.uy/), an authorized public landing page for requesting moving quotes through WhatsApp.
+- **API:** [Practice Software Testing (Toolshop)](https://api.practicesoftwaretesting.com/), using its published API and public sample accounts.
+- **Self-hosting:** Movelo source or deployment configuration is not currently available in this workspace. The suite uses its public site and does not include or publish a copy. Revisit self-hosting only after the owner provides an authorized repository or deployment instructions.
 
-- Web application: [Practice Software Testing](https://practicesoftwaretesting.com/).
-- API: [Toolshop REST API](https://api.practicesoftwaretesting.com/).
-- API specification: [Swagger documentation](https://api.practicesoftwaretesting.com/api/documentation).
-- The live endpoints and sample accounts are supplied for software-testing practice. Their availability, data, and behavior may change.
-- Published sample accounts, including `user` and `admin` roles, may be used for intended authentication and read-only checks. They are public demo credentials, not private secrets.
-- The project does not assume ownership or control of the hosted service.
-- The upstream project documents a self-hosted Docker environment. Review its current license and terms before downloading, redistributing, hosting, or using its source or images beyond permitted training use.
+The UI/API target split is explicit in environment configuration: `WEB_BASE_URL` points to Movelo and `API_BASE_URL` points to Toolshop by default. Both may be overridden for authorized compatible environments.
 
 ## 3. Objectives
 
-- Validate high-value Toolshop user journeys in the browser.
-- Exercise the documented REST API with response, schema-shape, and authentication checks.
-- Demonstrate successful authentication for user and admin sample roles without exposing tokens in logs or reports.
-- Keep tests isolated, readable, repeatable, and explicit about external dependencies.
-- Use generated data only when it can be safely isolated and cleaned up.
-- Produce actionable reports and evidence, and prepare the framework for CI execution.
+- Verify Movelo's primary public landing-page experience, in-page navigation, FAQ, quote-link content, responsive layout, and selected accessibility rules.
+- Validate Toolshop API response shapes, documented customer/admin authentication, protected profile access, and invalid-credential behavior.
+- Keep external interactions read-only, tests independent, and reports useful without exposing credentials or tokens.
+- Run the main Chromium UI/API suite in CI and use optional Firefox/WebKit runs for additional browser evidence.
 
 ## 4. Scope
 
 ### In scope
 
-- Application smoke checks for the Toolshop home/catalog page.
-- UI login for documented user and admin sample accounts, including destination and role-appropriate account navigation where verified.
-- API health, product, category, authentication, and current-user/profile checks against documented endpoints.
-- Bearer-token handling in test fixtures, with tokens kept in memory and never logged or committed.
-- Representative responsive UI checks at mobile and desktop viewport sizes.
-- Chromium execution in GitHub Actions CI; additional browser compatibility coverage can be added after the baseline is stable.
-- Risk-based test planning, issue tracking, and failure diagnostics.
+- Movelo landing-page heading, navigation to the moving-options section, and quote links with encoded WhatsApp message text.
+- Native FAQ disclosure behavior, mobile/tablet/desktop viewport checks, and an automated axe scan of the landing page.
+- One stakeholder-readable Gherkin scenario for a prepared furniture-move quote.
+- Toolshop API status, product/category response shape, customer/admin profile authentication, and invalid login response.
+- TypeScript compilation, CI reports, screenshots, traces, and retries limited to CI.
 
-### Out of scope for the shared hosted environment
+### Out of scope
 
-- Creating, editing, or deleting persistent users, products, categories, brands, carts, orders, favorites, invoices, or messages.
-- Tests that depend on data another user or test can modify.
-- Load, stress, soak, or performance tests.
-- Penetration testing, vulnerability scanning, or security claims beyond documented authentication/authorization behavior.
-- Database assertions against the hosted service.
-- Native mobile application or physical-device certification.
+- Sending messages, submitting forms, contacting providers, or initiating real moving requests through WhatsApp.
+- Movelo backend, authentication, payment, operational workflows, database, or API testing; none is exposed through the public landing page.
+- Toolshop browser UI tests; the existing UI checks against that shared demo were unreliable from GitHub-hosted runners and are no longer part of the active UI suite.
+- Data-changing API calls, database assertions, load/performance testing, penetration testing, or claims of complete WCAG conformance.
+- Physical-device certification; Playwright checks browser viewport and input emulation only.
 
-Destructive or state-changing API workflows may be considered only against a local or explicitly authorized isolated environment with reliable setup and teardown. Do not silently skip cleanup failures.
+## 5. Risk-based approach
 
-## 5. Risk-based test approach
+1. **P0:** Render the public landing page and verify its primary quote link is correctly prepared.
+2. **P1:** Verify in-page navigation, FAQ disclosure, responsive usability, and essential Toolshop API response shape.
+3. **P2:** Check detailed quote-link templates, accessibility findings, and selected cross-browser behavior.
 
-Prioritize scenarios by customer impact and likelihood of failure:
+Assertions focus on user-visible behavior and documented response contracts. Avoid clicking external contact links or depending on volatile third-party data.
 
-1. **P0 — Critical:** application availability, documented sample-account authentication, and protected current-user access.
-2. **P1 — Important:** product/category API response integrity, account navigation, role distinction, and responsive usability.
-3. **P2 — Supporting:** additional filters, sorting, validation, and browser coverage when stable and valuable.
+## 6. Automation design and safety
 
-Assertions should verify documented contracts and user-visible outcomes. Avoid asserting volatile shared catalog totals or undocumented implementation details.
+- Use Playwright Test with TypeScript, web-first assertions, accessible locators, and a small Movelo page object.
+- Keep API tests and API authentication fixtures scoped to Toolshop. Tokens remain in memory and must not appear in reports or logs.
+- Verify WhatsApp links by inspecting their `href` and target attributes. Do not follow these links or send messages.
+- Use native `<details>`/`<summary>` interaction for FAQ coverage rather than implementation-specific event handlers.
+- Keep Gherkin limited to the single business-readable quote-link scenario; retain lower-level assertions in regular Playwright tests.
+- Run axe on the landing page and attach complete results. The current baseline contains color-contrast findings in the navigation/CTA copy and illustrative chat animation; new findings fail the scan. Results are not a full accessibility conformance claim.
+- Keep two workers locally and one worker in CI. Do not increase parallelism or retries to hide instability.
+- Store only reports and failure diagnostics for seven days; video is disabled to limit unnecessary artifacts.
 
-## 6. Automation design
+## 7. Environments and execution
 
-- Use Playwright Test with TypeScript, built-in fixtures, API request contexts, and web-first assertions.
-- Keep UI and API base URLs independently configurable.
-- Use accessible UI locators and Page Objects for page-specific interactions; keep business expectations in the tests.
-- Keep each test independent. Do not rely on shared browser storage state or execution order.
-- Use executable Gherkin selectively for stakeholder-facing behavior; keep implementation details and simple assertions in regular Playwright tests to avoid duplicating test intent.
-- Acquire authorization tokens through the documented login endpoint in a scoped fixture. Keep tokens in memory, attach them only to the API context that needs them, and never print them.
-- Validate API response status and relevant response fields. Parse JSON as untrusted input and fail explicitly if required fields are missing.
-- Keep a small number of mocked UI tests for deterministic boundary states, such as an empty catalog. Label them clearly and retain real API/UI checks; mocks validate frontend behavior for a controlled response, not the live integration.
-- Run axe scans on the home and login pages for selected WCAG A/AA rules. Attach full results and fail on findings outside the explicitly documented baseline observed in the public application (language selector accessible name and login button name). Automated scans detect only a subset of accessibility issues and are not a conformance claim; pair them with manual review where accessibility is in scope.
-- Avoid fixed sleeps. Local runs do not retry failed tests; CI retries once to mitigate transient failures while preserving the original attempt in the report. Investigate recurring instability rather than relying on retries.
-- Configure two Playwright workers for local runs and one worker in CI to limit concurrent traffic against the shared public application/API. Increase parallelism only after the target and tests have demonstrated stable behavior.
-- Use generated data only for an authorized target where cleanup is possible. The hosted target's persistent resources must not be modified by this suite.
-
-### Test setup and cleanup
-
-- Use `test.beforeEach` in a spec or `test.describe` when its tests share a UI starting state, such as opening the catalog or login page. Keep test-specific actions and assertions in the test itself.
-- Use fixtures for reusable resources with a lifecycle, such as API request contexts and authenticated sessions. Put setup before `await use(resource)` and guaranteed cleanup in `finally` after it.
-- Do not add empty or duplicate `afterEach` hooks when a fixture already owns and disposes the resource. Use an `afterEach` hook only for genuinely shared post-test behavior that is not resource teardown.
-
-## 7. Execution, environments, and diagnostics
-
-- **Local primary target:** public Toolshop web app and API, using only small read-only requests and published demo accounts.
-- **Local isolated alternative:** upstream Docker environment for state-changing tests, subject to its license and setup requirements.
-- **CI:** GitHub Actions runs the TypeScript build and API suite on pushes and pull requests. UI tests against the public demo are manually dispatchable because the hosted site can be unreliable from GitHub-hosted runners. When both UI options are selected, the Chromium UI suite runs before selected Firefox/WebKit tests so the shared public service is not exercised concurrently by both jobs. Dependabot checks npm and GitHub Actions dependencies. Artifacts retain reports and failure traces/screenshots, not videos.
-- **Parallelism:** use two workers locally and one worker in CI. Do not enable `fullyParallel` until test independence, fixture/data isolation, and repeated parallel stability have been demonstrated; account for rate limits of the shared hosted target.
-- **Parallel-readiness check:** use the dedicated two-worker, zero-retry command for evaluation and inspect JSON duration/retry results. Trials against the shared hosted service exposed intermittent sorting and sample-login failures; keep `fullyParallel` disabled until repeatability is shown in a stable isolated target.
-- **Browsers:** Chromium is the baseline. Firefox and WebKit are opt-in for selected read-only catalog/product flows to limit routine CI cost and shared-service traffic.
-- **Responsive:** emulate representative mobile, tablet, desktop, touch, and mobile landscape conditions. Describe results as browser emulation, not physical-device coverage.
-- **Mocking:** PST-015 intercepts the products API with an empty paginated response and verifies the catalog remains usable. The test still loads the hosted web application, so it does not remove that external dependency.
-- Publish Playwright HTML and JSON reports and retain traces/screenshots on failure where useful. JSON records per-test duration and retry outcomes for flakiness/efficiency review. Do not include bearer tokens, authentication state, or unnecessary personal data in artifacts.
-- **Sustainability:** limit routine CI to build/API checks, run public-host UI and cross-browser suites only when needed, retain diagnostics briefly, and use duration/retry evidence to remove redundant work. These are efficiency practices, not a measured carbon footprint or SCI claim.
-- **AI-assisted QA:** treat AI as an optional ideation aid only. Use non-sensitive inputs, review proposed cases against requirements, and retain human-owned expected results and test oracles.
-- Distinguish application failures from public service outages or shared-data changes.
+- **Local:** Public Movelo UI and Toolshop API targets by default. `WEB_BASE_URL` and `API_BASE_URL` support authorized compatible environments.
+- **CI:** Pushes and pull requests run the TypeScript build, Toolshop API tests, and Movelo Chromium UI suite. Firefox/WebKit homepage checks are opt-in through `workflow_dispatch`.
+- **External availability:** CI uses the public Movelo site because no source or deployment configuration was provided for a private instance. A site outage can therefore fail the UI job; report that separately from a test regression.
+- **Self-hosting:** Do not clone, package, or publish the application without an authorized source repository and deployment guidance. A locally hosted target is a future option once provided.
+- **Parallel-readiness:** `npm run test:parallel-check` remains an evaluation command only. `fullyParallel` stays disabled until repeated runs prove independent and stable.
+- **Sustainability:** Keep routine CI focused on a compact read-only suite, retain diagnostic artifacts briefly, and use run evidence before expanding coverage. This is not a measured carbon-footprint or SCI claim.
+- **AI-assisted QA:** Treat generated ideas as suggestions only; validate every scenario and expected result against requirements.
 
 ## 8. Entry and exit criteria
 
 ### Entry
 
-- The web application and API health endpoint are reachable.
-- The active OpenAPI specification and documented sample accounts have been checked.
-- Dependencies and required Playwright browsers are installed.
-- The test has a documented expected result and does not mutate shared hosted data.
+- Movelo's public landing page and Toolshop API are reachable.
+- API sample accounts remain documented and authorized for demo use.
+- Browser dependencies are installed and each test has a read-only expected result.
 
 ### Exit
 
-- All in-scope P0 scenarios pass, or failures are triaged and their cause documented.
-- API tests validate successful responses and essential fields without depending on unstable global counts.
-- Tokens are not present in logs, screenshots, traces, committed files, or report attachments.
-- Tests are independent and repeatable; public-environment limitations are reported honestly.
+- In-scope checks pass, or failures are triaged as application, test, or external-service issues.
+- API tests verify essential response fields without asserting unstable global totals.
+- No WhatsApp messages, persistent records, credentials, or bearer tokens are sent to artifacts.
+- Results accurately distinguish Movelo UI coverage from Toolshop API coverage.
 
 ## 9. Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Public application/API downtime or contract changes | Record the target version/status; distinguish service availability from a test regression and review the published OpenAPI spec. |
-| Shared demo data changes | Prefer read-only API calls and assertions about shape/relationships rather than exact totals. |
-| Token leakage | Keep tokens scoped to fixtures and memory; never attach authorization headers or token values to test output. |
-| Accidental persistent writes | Keep public-host tests read-only except login; reserve writes for an authorized isolated environment. |
-| Role assumptions drift | Verify user/admin behavior against current published documentation and application behavior; do not infer permissions from labels alone. |
-| Mobile emulation overstated | Report viewport/device emulation separately from physical device testing. |
-| Upstream source/license constraints | Review upstream terms before self-hosting, redistributing, or packaging source/images. |
+| Public Movelo site is unavailable or changes | Keep UI tests read-only; identify public-site failures as external dependencies and use an authorized local instance when deployment material is available. |
+| A CTA accidentally contacts a real person | Inspect the link only; never click it or submit a message. |
+| UI/API targets are mistaken for one application | State the target for each suite in configuration, README, test plan, and CI step names. |
+| Toolshop account or API changes | Verify against the published API behavior and keep tokens scoped to fixtures. |
+| Token or account data leaks into artifacts | Do not log tokens or authentication state; keep only sanitized diagnostics. |
+| Viewport emulation is overstated | Describe results as browser emulation, not physical-device testing. |
+| Movelo self-hosting is attempted without source permission/material | Keep using the authorized public UI until an authorized source/deployment setup is supplied; do not copy the public site. |
 
 ## 10. Measures of success
 
-- Coverage of documented P0 UI and API scenarios.
-- Stable outcome and response-shape checks for each API scenario.
-- Verified user/admin identity and role behavior without exposing tokens.
-- Flaky-test and repeat-failure trends.
-- CI status, run time, and useful failure artifact publication; distinguish API CI results from manually triggered public-site UI checks.
-- Responsive viewport and browser coverage accurately represented.
+- Passing, repeatable Movelo UI checks and useful failure diagnostics.
+- Toolshop API assertions for response shape and authentication behavior.
+- CI status and duration reported with the target named accurately.
+- No unintended outbound contact or persistent data change.
 
 Passing tests do not prove the absence of defects or validate behavior outside the documented scope.
 
 ## 11. Deliverables
 
-- This strategy and a prioritized test plan.
-- Playwright and TypeScript framework configuration for the web app and API.
-- UI and API tests for documented, non-destructive Toolshop scenarios.
-- Reusable Page Objects, API fixtures, and test data.
-- GitHub Actions CI, Dependabot update configuration, and Playwright diagnostic reports.
-- README with verified setup, run commands, scope, limitations, and upstream references.
+- This strategy and the prioritized [test plan](./TEST_PLAN.md).
+- Playwright and TypeScript framework configuration for the Movelo UI and Toolshop API.
+- Movelo UI tests, Toolshop API tests, a small Gherkin scenario, and scoped API fixtures.
+- GitHub Actions build/API/UI workflow and Playwright diagnostic reports.

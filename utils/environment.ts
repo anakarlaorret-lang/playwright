@@ -1,5 +1,5 @@
 export const environment = {
-  webBaseURL: process.env.WEB_BASE_URL || 'https://practicesoftwaretesting.com',
+  webBaseURL: process.env.WEB_BASE_URL || 'https://movelo.com.uy',
   apiBaseURL:
     process.env.API_BASE_URL || 'https://api.practicesoftwaretesting.com',
 };

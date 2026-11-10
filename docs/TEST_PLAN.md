@@ -1,56 +1,48 @@
-# Test Plan — Practice Software Testing (Toolshop)
+# Test Plan — Movelo UI and Toolshop API
 
-This plan describes planned coverage; it does not imply every scenario is implemented. See [TEST_STRATEGY.md](./TEST_STRATEGY.md) for environments, safety boundaries, and automation principles.
+This plan describes active coverage only. See [TEST_STRATEGY.md](./TEST_STRATEGY.md) for target separation, safety boundaries, and external-service risks.
 
 ## Priorities
 
-- **P0 — Critical:** application availability, sample-account authentication, protected profile access.
-- **P1 — High:** API response integrity, role identity, responsive usability.
-- **P2 — Supporting:** invalid authentication, catalog search, and expanded browser coverage.
+- **P0 — Critical:** Movelo landing page and primary quote entry point; Toolshop API health and protected profile access.
+- **P1 — High:** quote options, FAQ behavior, responsive layout, and products/categories response integrity.
+- **P2 — Supporting:** accessibility scan, Gherkin scenario, and invalid-credential behavior.
 
 ## Scenarios
 
-| ID | Priority | Layer | Scenario | Expected result | Status |
+| ID | Priority | Target / Layer | Scenario | Expected result | Status |
 |---|---|---|---|---|---|
-| PST-001 | P0 | UI | Open Toolshop home page | Page title, catalog controls, and product area render. | Implemented |
-| PST-002 | P0 | UI | Sign in with the documented customer account | Login succeeds and the account page identifies the signed-in user. | Implemented |
-| PST-003 | P0 | API | Authenticate customer with `POST /users/login`; use bearer token on `GET /users/me` | Protected profile matches the customer account and the issued token's role claim is `user`. | Implemented |
-| PST-004 | P1 | API | Authenticate admin and retrieve `GET /users/me` | Protected profile matches the admin sample account and the issued token's role claim is `admin`. | Implemented |
-| PST-005 | P1 | API | Request `/status` | Successful response contains Toolshop application and version metadata. | Implemented |
-| PST-006 | P1 | API | Request `/products?page=1` | Successful response contains product IDs, names, and numeric prices without asserting a volatile total. | Implemented |
-| PST-007 | P1 | API | Request `/categories` | Successful response contains category IDs and names. | Implemented |
-| PST-008 | P1 | UI | Search by product name, verify unmatched search, and filter by category | Product cards match the search/category criteria; unmatched search displays no product cards. | Implemented |
-| PST-009 | P1 | UI | Open catalog and login at mobile and desktop viewports | Key controls remain visible and the catalog has no horizontal overflow. | Implemented |
-| PST-010 | P2 | API | Submit invalid credentials to `/users/login` | API returns `401` and does not issue an access token. | Implemented |
-| PST-011 | P1 | UI | Submit invalid customer credentials | Login is rejected with a visible error and the user remains on the login page. | Implemented |
-| PST-012 | P2 | UI | Submit a malformed email address | Browser email validation prevents successful form submission. | Implemented |
-| PST-013 | P1 | UI | Open a product from the catalog | Product detail route and selected product heading are displayed. | Implemented |
-| PST-014 | P1 | UI | Add a product to cart and verify item/total | Cart reflects the added product and its price. | Planned (isolated environment only) |
-| PST-015 | P2 | UI (mocked API) | Return an empty products response from the API | Catalog controls remain available and no product cards are rendered. | Implemented |
-| PST-016 | P1 | UI accessibility | Scan home and login pages against automated WCAG A/AA rules | axe attaches full findings and fails on violations outside the documented baseline; this is not a full conformance claim. | Implemented |
+| MOV-001 | P0 | Movelo UI | Render the landing page | Expected title, hero heading, and main content are visible. | Implemented |
+| MOV-002 | P1 | Movelo UI | Navigate to moving options | The in-page link updates the fragment and brings the section into view. | Implemented |
+| MOV-003 | P0 | Movelo UI | Inspect quote links | The primary CTA and three service options contain WhatsApp URLs with prepared text; no link is followed. | Implemented |
+| MOV-004 | P1 | Movelo UI | Use the page at a mobile viewport | Hero and primary request CTA remain visible with no horizontal overflow. | Implemented |
+| MOV-005 | P1 | Movelo UI | Use navigation at a tablet viewport | Navigation and moving options remain visible with no horizontal overflow. | Implemented |
+| MOV-006 | P1 | Movelo UI | Render at a desktop viewport | Hero and primary CTA remain visible with no horizontal overflow. | Implemented |
+| MOV-007 | P2 | Movelo accessibility | Scan the landing page for selected WCAG A/AA rules | Axe results are attached; untriaged violations fail the check. | Implemented |
+| MOV-008 | P2 | Movelo Gherkin | Prepare a furniture-move quote link | The visible option points to WhatsApp with a prefilled message and does not send it. | Implemented |
+| MOV-009 | P1 | Movelo UI | Expand and collapse an FAQ | The answer is shown on expansion and hidden on collapse. | Implemented |
+| PST-003 | P0 | Toolshop API | Authenticate the sample customer and read `/users/me` | Profile email and token role match the customer account. | Implemented |
+| PST-004 | P1 | Toolshop API | Authenticate the sample admin and read `/users/me` | Profile email and token role match the admin account. | Implemented |
+| PST-005 | P0 | Toolshop API | Request `/status` | Response includes Toolshop application and version metadata. | Implemented |
+| PST-006 | P1 | Toolshop API | Request `/products?page=1` | Response includes product IDs, names, and numeric prices. | Implemented |
+| PST-007 | P1 | Toolshop API | Request `/categories` | Response includes category IDs and names. | Implemented |
+| PST-010 | P2 | Toolshop API | Submit invalid credentials | API responds with `401` and does not issue an access token. | Implemented |
 
-## Execution order
+## Execution
 
-1. Keep the implemented PST-001 through PST-013 baseline stable in local runs and Chromium CI.
-2. Keep API tests in push/PR CI; trigger public-host UI tests manually and record external-site availability separately.
-3. Run selected read-only catalog/product UI flows in Firefox and WebKit manually when cross-browser evidence is needed.
-4. Implement PST-014 cart coverage only in a local or explicitly authorized isolated environment with reliable cleanup.
-5. Review the Gherkin pilot for stakeholder readability and maintenance before adding more scenarios.
-6. Run `npm run test:parallel-check` repeatedly and review its JSON report for failures/retries; keep `fullyParallel` disabled by default until stable results are demonstrated against an isolated target.
+1. `npm run build` validates TypeScript.
+2. `npm test` runs the active Chromium UI/API suite and Gherkin scenario.
+3. GitHub Actions runs build, API, and Chromium UI tests on pushes and pull requests.
+4. `npm run test:cross-browser` runs selected homepage smoke checks in Firefox and WebKit; CI dispatch is optional.
+5. Keep `fullyParallel` disabled until repeat runs prove stability and test isolation.
 
-## Planned framework improvements
+## Boundaries
 
-- **Gherkin pilot:** PST-008's unmatched-product search scenario is implemented in `tests/features/catalog-search.feature`; step definitions reuse the existing Home Page Object. Keep Gherkin limited to scenarios where business-readable steps add value rather than translating all low-level checks.
-- **Full parallel execution:** a two-worker, zero-retry readiness command is available as `npm run test:parallel-check`. Two-worker trials against the public service failed intermittently, so `fullyParallel` remains disabled. Re-evaluate only against an isolated/stable target or after the public service demonstrates repeated stable runs.
-- **Responsive emulation:** coverage includes mobile and desktop viewports, a tablet viewport, touch interaction with mobile filters, and a compact mobile landscape viewport. These are browser emulation checks, not physical-device coverage.
-- **Accessibility:** automated axe checks cover the home and login pages for selected WCAG A/AA rules. The current public application has known findings for the language selector accessible name and a login-page button name; these are documented as baseline, attached to test results, and new findings fail the tests. Automated scans catch only some issues and do not establish WCAG conformance; manual assessment remains necessary.
-- **Efficient test execution:** CI exports Playwright JSON results with per-test durations, retry counts, and outcomes. Use this evidence to investigate flaky or slow tests rather than increasing retries by default.
-- **AI-assisted QA:** any future pilot should use non-sensitive scenarios, require human validation of generated cases, and keep AI output out of the pass/fail oracle unless independently verified.
-
-## Shared-service safety
-
-Public-host tests must not create or modify persistent users, products, categories, brands, carts, orders, favorites, invoices, or messages. Keep bearer tokens in memory and never include their values in reports or logs. Reserve write workflows for a local or explicitly authorized isolated environment with reliable setup and cleanup.
+- Movelo checks never click WhatsApp links, submit contact requests, or modify business data.
+- Toolshop checks use only documented sample accounts and read-only API requests, including authentication.
+- No active test covers Movelo's backend, a database, payments, or operational workflows.
+- The public Movelo site remains a CI dependency until an authorized source/deployment setup is available.
 
 ## Traceability
 
-Use the scenario IDs in test titles or annotations. For failures, record target (web/API), environment, browser, sanitized request/response details, and reproducible steps. Never attach credentials, tokens, cookies, or authentication state.
+Test titles carry the scenario IDs. For failures, record target, environment, browser, sanitized request/response details, and reproducible steps. Never attach credentials, tokens, cookies, or authentication state.

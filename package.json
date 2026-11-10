@@ -1,7 +1,7 @@
 {
   "name": "playwright",
   "version": "1.0.0",
-  "description": "Playwright and TypeScript portfolio framework for UI and API testing of Practice Software Testing Toolshop.",
+  "description": "Playwright and TypeScript portfolio framework for Movelo UI and Toolshop API testing.",
   "main": "index.js",
   "directories": {
     "lib": "lib",
@@ -25,7 +25,7 @@
     "bdd:generate": "bddgen",
     "test": "npm run bdd:generate && playwright test --project=chromium --project=gherkin",
     "test:parallel-check": "npm run bdd:generate && playwright test --fully-parallel --project=chromium --project=gherkin --workers=2 --retries=0",
-    "test:cross-browser": "playwright test --project=firefox --project=webkit tests/homepage.spec.ts tests/product.spec.ts",
+    "test:cross-browser": "playwright test --project=firefox --project=webkit tests/homepage.spec.ts",
     "test:gherkin": "npm run bdd:generate && playwright test --project=gherkin",
     "report": "playwright show-report"
   },

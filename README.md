@@ -1,111 +1,68 @@
-# Practice Software Testing — Playwright Portfolio
+# Playwright and TypeScript QA Portfolio
 
 [![Playwright CI](https://github.com/anakarlaorret-lang/playwright/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/anakarlaorret-lang/playwright/actions/workflows/ci.yml)
 
-Playwright Test and TypeScript portfolio framework for the [Practice Software Testing Toolshop](https://practicesoftwaretesting.com/) web application and its documented REST API.
+This portfolio uses Playwright Test and TypeScript to demonstrate UI automation against the [Movelo landing page](https://movelo.com.uy/) and API testing against the [Practice Software Testing (Toolshop) API](https://api.practicesoftwaretesting.com/). The UI and API targets are intentionally separate: Movelo exposes a public marketing experience, while Toolshop supplies a documented API and sample accounts.
 
-## Project goals
+## Coverage
 
-- Demonstrate risk-based QA planning across UI and API.
-- Practice maintainable Playwright, TypeScript, Page Object Model, and test fixtures.
-- Validate documented sample-account authentication, including customer/admin roles and bearer-token protected profile access.
-- Validate the TypeScript build and Chromium suite locally and in GitHub Actions CI.
-- Keep external-service limitations and test boundaries explicit.
+- Movelo landing page rendering and in-page navigation.
+- Read-only validation of WhatsApp quote links and prefilled messages; tests inspect link targets but never open or send a message.
+- FAQ disclosure behavior, responsive viewport checks, and an automated axe scan of the landing page.
+- A small Playwright-BDD scenario for a prepared furniture-move quote link.
+- Toolshop API health, product and category response shapes, customer/admin authentication, protected profile access, and invalid-credential rejection.
+- TypeScript compilation, Chromium UI/API tests on pushes and pull requests, and optional Firefox/WebKit smoke tests.
 
-## Current status
+The UI suite does not claim coverage of Movelo's WhatsApp service, operational backend, customer data, or database. No form submissions or state-changing workflows are part of this suite.
+The accessibility scan retains a documented baseline of existing color-contrast findings in the public page; additional findings fail the check.
 
-Implemented coverage:
+## Requirements and local runs
 
-- Toolshop home page smoke check and automated axe accessibility scans of the home and login pages.
-- Catalog search and category filtering.
-- Customer login through the UI, including invalid credentials and malformed-email validation.
-- Product detail navigation; mobile, tablet, desktop, touch, and landscape viewport emulation.
-- Read-only API health, products, and categories checks.
-- Customer/admin API login that obtains bearer tokens in memory, checks their role claims, and validates protected `/users/me` profile responses.
-- A mocked empty-catalog boundary scenario and an executable Gherkin pilot for unmatched catalog search.
-- Automated axe scans of home/login pages, with known upstream findings documented and new findings reported.
-
-Selected read-only catalog/product UI tests can be run manually in Firefox and WebKit. `fullyParallel` remains disabled: two-worker tests against the shared hosted service showed intermittent failures. Cart workflows remain deferred until an isolated environment with reliable cleanup is available. The hosted demo suite remains read-only except for authentication attempts.
-
-The public environment is shared. Current tests avoid creating or modifying persistent resources and do not run load, stress, security, or destructive tests.
-
-## Prerequisites
-
-- Node.js 20.18 or newer.
-- npm.
-
-## Install and run
+- Node.js 20.18 or newer
+- npm
 
 ```bash
 npm ci
 npx playwright install chromium
+npm run build
 npm test
 npx playwright show-report
 ```
 
-For the selected Firefox/WebKit smoke tests:
+Run the Gherkin scenario by itself:
+
+```bash
+npm run test:gherkin
+```
+
+Run the selected homepage checks in Firefox and WebKit:
 
 ```bash
 npx playwright install firefox webkit
 npm run test:cross-browser
 ```
 
-Run TypeScript compilation:
+The public targets can be overridden with `WEB_BASE_URL` and `API_BASE_URL` for authorized compatible environments. `WEB_BASE_URL` defaults to Movelo; `API_BASE_URL` defaults to Toolshop.
 
-```bash
-npm run build
-```
+## CI and external dependencies
 
-The unmatched-product catalog scenario is a small executable Gherkin pilot:
+GitHub Actions runs the TypeScript build, Toolshop API checks, and Movelo Chromium UI tests on pushes and pull requests. Firefox/WebKit smoke tests remain opt-in through `workflow_dispatch`. The UI target is still a public hosted site: a self-hosted Movelo environment cannot be configured until its source or deployment instructions are available. CI does not package or publish a copy of the site.
 
-```bash
-npm run test:gherkin
-```
+The Movelo site is an external dependency, so a service outage can fail UI checks. Tests are read-only and deliberately avoid following WhatsApp links. Playwright retains HTML/JSON reports and failure screenshots/traces for seven days; video recording is disabled.
 
-To evaluate fully parallel execution without enabling it by default:
-
-```bash
-npm run test:parallel-check
-```
-
-GitHub Actions runs the TypeScript build and API tests on pushes and pull requests. The CI badge reflects those checks; UI and selected Firefox/WebKit runs are manual because the hosted site has not reliably rendered from GitHub-hosted runners. A green default CI run does not mean UI tests ran. HTML/JSON reports and failure diagnostics are retained as workflow artifacts for seven days; video recording is disabled to keep artifacts small.
-
-Dependabot checks npm and GitHub Actions dependencies weekly, grouping updates by ecosystem to reduce PR noise. No lint or code-scanning workflow is configured yet; do not treat TypeScript compilation as a substitute for formatting, lint, or security analysis.
-
-Playwright uses two workers locally and one worker in CI. Full parallel execution (`fullyParallel`) is intentionally deferred until tests and data isolation are proven stable.
-
-## Configuration and sample accounts
-
-The web and API targets are the public hosted Toolshop services. Sample customer/admin credentials are documented by the upstream project and stored in [testData.json](utils/testData.json); these are public training credentials, not private account secrets. Do not put personal credentials or generated bearer tokens in the repository.
-
-The targets can be overridden with `WEB_BASE_URL` and `API_BASE_URL` environment variables, for example when running against an authorized local instance.
-
-The upstream application publishes its [API specification](https://api.practicesoftwaretesting.com/api/documentation) and [source repository](https://github.com/testsmith-io/practice-software-testing). Review the upstream license and terms before downloading, redistributing, hosting, or packaging source code or images. This portfolio targets the hosted training service and does not include or redistribute the application.
+The Toolshop sample accounts are documented public training credentials in [testData.json](utils/testData.json). Bearer tokens are created in memory for API checks and must not be logged, attached, or committed.
 
 ## Repository layout
 
 ```text
-tests/                    Active UI and API tests
-tests/fixtures.ts         API clients and in-memory bearer-token fixtures
-pages/                    Shared and page-specific objects
-utils/testData.json       Public sample accounts and test inputs
-docs/TEST_STRATEGY.md     Scope, approach, risks, and boundaries
-docs/TEST_PLAN.md         Prioritized scenarios and implementation status
-tests/features/           Executable Gherkin behavior scenarios
+tests/                    Movelo UI and Toolshop API tests
+tests/features/           Executable Gherkin scenarios
 tests/steps/              Playwright-BDD step definitions
-.github/ISSUE_TEMPLATE/  Bug report form
-playwright.config.ts      Playwright Test configuration
+pages/                    Movelo page object
+utils/testData.json       Toolshop sample accounts and invalid-login data
+docs/TEST_STRATEGY.md     Targets, risks, scope, and execution approach
+docs/TEST_PLAN.md         Prioritized scenarios and implementation status
+playwright.config.ts      Playwright Test and browser-project configuration
 ```
 
-## Scope and limitations
-
-The hosted app and API are external shared dependencies. Public-host tests are limited to read-only checks and authentication. Data-changing workflows, database verification, and performance tests require an isolated local or explicitly authorized environment with reliable cleanup. Playwright device profiles validate browser emulation, not physical-device behavior.
-
-See [TEST_STRATEGY.md](docs/TEST_STRATEGY.md) and [TEST_PLAN.md](docs/TEST_PLAN.md) for details.
-
-## Portfolio publication checklist
-
-- [x] Publish the framework scope, test strategy, and prioritized test plan.
-- [x] Keep the live demo read-only apart from intended authentication attempts.
-- [ ] After publishing the Dependabot grouping configuration, close the existing individual update PRs and review the consolidated updates before merging.
-- [ ] Add a concise project entry and repository link to the portfolio/CV, and describe the CI badge as build/API coverage rather than full UI CI.
+See [TEST_STRATEGY.md](docs/TEST_STRATEGY.md) and [TEST_PLAN.md](docs/TEST_PLAN.md) for boundaries and traceability.
